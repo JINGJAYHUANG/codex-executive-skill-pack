@@ -1,0 +1,4 @@
+interface:
+  display_name: "Decision Memo Engine"
+  short_description: "Convert evidence and constraints into a concise, auditable decision memo."
+  default_prompt: "Write a decision memo comparing these three options and recommend one."

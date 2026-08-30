@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+recursive-include src/executive_skill_pack/data *.json
+recursive-include catalog *.json
+recursive-include schemas *.json
+recursive-include evals *.json *.jsonl
+recursive-include skills SKILL.md openai.yaml examples.md
+recursive-include docs *.md

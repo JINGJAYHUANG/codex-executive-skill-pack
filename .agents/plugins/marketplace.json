@@ -1,0 +1,21 @@
+{
+  "name": "jingjayhuang-executive-skills",
+  "interface": {
+    "displayName": "JINGJAYHUANG Executive Skills"
+  },
+  "plugins": [
+    {
+      "name": "codex-executive-skill-pack",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/JINGJAYHUANG/codex-executive-skill-pack.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

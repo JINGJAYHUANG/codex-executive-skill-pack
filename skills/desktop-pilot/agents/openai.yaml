@@ -1,0 +1,6 @@
+interface:
+  display_name: "Desktop Pilot"
+  short_description: "Execute or rehearse authorized GUI workflows with previews, checkpoints, and rollback awareness."
+  default_prompt: "$desktop-pilot open the app and execute this approved workflow, pausing before submission."
+policy:
+  allow_implicit_invocation: false

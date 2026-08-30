@@ -1,0 +1,6 @@
+interface:
+  display_name: "Screen Macro Recorder"
+  short_description: "Convert an authorized screen trace into a redacted, reproducible macro specification."
+  default_prompt: "$screen-macro-recorder turn this authorized screen recording into a redacted macro spec."
+policy:
+  allow_implicit_invocation: false

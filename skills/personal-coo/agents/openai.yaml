@@ -1,0 +1,6 @@
+interface:
+  display_name: "Personal COO"
+  short_description: "Coordinate explicitly selected commitments into a bounded operating brief without building a hidd..."
+  default_prompt: "$personal-coo coordinate these selected work and study commitments into a weekly operating brief."
+policy:
+  allow_implicit_invocation: false

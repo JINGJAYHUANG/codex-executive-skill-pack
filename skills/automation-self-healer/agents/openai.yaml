@@ -1,0 +1,6 @@
+interface:
+  display_name: "Automation Self-Healer"
+  short_description: "Diagnose and repair an automation through bounded patches, evidence, and rollback."
+  default_prompt: "$automation-self-healer diagnose this failed job and test the smallest reversible patch."
+policy:
+  allow_implicit_invocation: false

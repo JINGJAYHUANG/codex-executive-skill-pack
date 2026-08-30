@@ -1,0 +1,6 @@
+interface:
+  display_name: "API Bridge Builder"
+  short_description: "Build a narrow, tested adapter between a documented API and a local workflow."
+  default_prompt: "$api-bridge-builder build a tested adapter for this documented API using environment-based secrets."
+policy:
+  allow_implicit_invocation: false

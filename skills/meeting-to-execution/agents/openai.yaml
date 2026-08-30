@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meeting to Execution"
+  short_description: "Convert authorized meeting material into a decision log and an execution-ready action register."
+  default_prompt: "Turn these meeting notes into decisions, owners, dependencies, and a draft follow-up."

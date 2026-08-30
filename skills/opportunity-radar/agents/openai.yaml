@@ -1,0 +1,4 @@
+interface:
+  display_name: "Opportunity Radar"
+  short_description: "Discover and rank opportunities against explicit capabilities, constraints, and kill criteria."
+  default_prompt: "Find and rank business opportunities that fit a small analytics team."

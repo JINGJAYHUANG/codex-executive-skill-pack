@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "assertions": [
+    {
+      "id": "exact-name-set",
+      "description": "The public pack preserves the exact recovered 20 names and order.",
+      "expected": [
+        "web-intel-harvester",
+        "change-sentinel",
+        "competitor-radar",
+        "opportunity-radar",
+        "screen-macro-recorder",
+        "desktop-pilot",
+        "api-bridge-builder",
+        "data-pipeline-fabricator",
+        "fileops-guardian",
+        "workflow-compiler",
+        "mission-control",
+        "automation-self-healer",
+        "decision-memo-engine",
+        "experiment-autopilot",
+        "knowledge-graph-builder",
+        "skillsmith",
+        "experience-replay",
+        "meeting-to-execution",
+        "inbox-negotiator",
+        "personal-coo"
+      ]
+    },
+    {
+      "id": "explicit-only-set",
+      "description": "Nine consequential or high-abstraction skills disable implicit invocation.",
+      "expected": [
+        "api-bridge-builder",
+        "automation-self-healer",
+        "desktop-pilot",
+        "fileops-guardian",
+        "inbox-negotiator",
+        "mission-control",
+        "personal-coo",
+        "screen-macro-recorder",
+        "workflow-compiler"
+      ]
+    },
+    {
+      "id": "direct-first",
+      "description": "No skill is preferred when direct completion is narrower.",
+      "expected": true
+    },
+    {
+      "id": "advisory-handoffs",
+      "description": "Route edges recommend handoffs but never execute a chain automatically.",
+      "expected": true
+    },
+    {
+      "id": "external-write-approval",
+      "description": "External writes require a separate approval boundary.",
+      "expected": true
+    },
+    {
+      "id": "honest-maturity",
+      "description": "All skills are instruction-audited and host-dependent, not production-certified.",
+      "expected": true
+    }
+  ]
+}

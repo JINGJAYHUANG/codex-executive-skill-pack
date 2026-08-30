@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Intel Harvester"
+  short_description: "Collect public web evidence into a structured, cited source pack before analysis begins."
+  default_prompt: "Find authoritative sources on the new rule and build a cited source pack."

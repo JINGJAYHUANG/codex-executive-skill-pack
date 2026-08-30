@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JINGJAYHUANG/codex-executive-skill-pack/schemas/routes.schema.json",
+  "title": "Codex Executive Skill Pack Route Graph",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "default_policy",
+    "edges"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "default_policy": {
+      "type": "object",
+      "required": [
+        "mode",
+        "minimum_score",
+        "explicit_only_requires_name",
+        "mission_control_never_implicit",
+        "handoffs_are_advisory",
+        "external_writes_require_separate_approval"
+      ],
+      "properties": {
+        "mode": {
+          "const": "direct-first"
+        },
+        "minimum_score": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "explicit_only_requires_name": {
+          "const": true
+        },
+        "mission_control_never_implicit": {
+          "const": true
+        },
+        "handoffs_are_advisory": {
+          "const": true
+        },
+        "external_writes_require_separate_approval": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "when"
+        ],
+        "properties": {
+          "from": {
+            "enum": [
+              "web-intel-harvester",
+              "change-sentinel",
+              "competitor-radar",
+              "opportunity-radar",
+              "screen-macro-recorder",
+              "desktop-pilot",
+              "api-bridge-builder",
+              "data-pipeline-fabricator",
+              "fileops-guardian",
+              "workflow-compiler",
+              "mission-control",
+              "automation-self-healer",
+              "decision-memo-engine",
+              "experiment-autopilot",
+              "knowledge-graph-builder",
+              "skillsmith",
+              "experience-replay",
+              "meeting-to-execution",
+              "inbox-negotiator",
+              "personal-coo"
+            ]
+          },
+          "to": {
+            "enum": [
+              "web-intel-harvester",
+              "change-sentinel",
+              "competitor-radar",
+              "opportunity-radar",
+              "screen-macro-recorder",
+              "desktop-pilot",
+              "api-bridge-builder",
+              "data-pipeline-fabricator",
+              "fileops-guardian",
+              "workflow-compiler",
+              "mission-control",
+              "automation-self-healer",
+              "decision-memo-engine",
+              "experiment-autopilot",
+              "knowledge-graph-builder",
+              "skillsmith",
+              "experience-replay",
+              "meeting-to-execution",
+              "inbox-negotiator",
+              "personal-coo"
+            ]
+          },
+          "when": {
+            "type": "string",
+            "minLength": 10
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
