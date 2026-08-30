@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible catalog, generator, router, validator, or CLI defect
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Use synthetic input only. Do not paste credentials, private correspondence, personal memory, or machine-specific paths."
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: Include the smallest reproducible request or fixture.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Verification output
+      description: Include relevant test names or sanitized output.
