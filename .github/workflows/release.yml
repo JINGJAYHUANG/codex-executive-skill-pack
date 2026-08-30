@@ -1,0 +1,176 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Semantic version tag, for example v0.2.0
+        required: true
+        default: v0.1.0
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codex-executive-skill-pack-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_DATE_EPOCH: "1767225600"
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: ""
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            version="v0.1.0"
+          else
+            version="${{ inputs.version }}"
+          fi
+          [[ "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]] || {
+            echo "invalid version: $version" >&2
+            exit 64
+          }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "plain=${version#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Install package
+        run: python -m pip install --disable-pip-version-check --no-deps -e .
+
+      - name: Re-run release gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q src scripts tests
+          python scripts/generate_skill_files.py --root . --check
+          python -m unittest discover -s tests -v
+          python scripts/public_audit.py .
+          cesp validate --root .
+          cesp eval --root .
+
+      - name: Create immutable tag
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --tags --force
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            tagged="$(git rev-list -n 1 "$VERSION")"
+            [[ "$tagged" == "$GITHUB_SHA" ]] || {
+              echo "$VERSION already points to $tagged, not $GITHUB_SHA" >&2
+              exit 65
+            }
+          else
+            git tag -a "$VERSION" -m "Codex Executive Skill Pack $VERSION"
+            git push origin "$VERSION"
+          fi
+
+      - name: Build release assets
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          PLAIN_VERSION: ${{ steps.version.outputs.plain }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          prefix="codex-executive-skill-pack-${PLAIN_VERSION}/"
+          git archive --format=tar --prefix="$prefix" "$VERSION" | gzip -n > "dist/codex-executive-skill-pack-${PLAIN_VERSION}.tar.gz"
+          git archive --format=zip --prefix="$prefix" "$VERSION" > "dist/codex-executive-skill-pack-${PLAIN_VERSION}.zip"
+          python -m pip wheel --disable-pip-version-check --no-deps --no-build-isolation --wheel-dir dist .
+          cp catalog/manifest.json dist/SKILL_MANIFEST.json
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "schema": 1,
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "version": os.environ["VERSION"],
+              "commit": os.environ["GITHUB_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "workflow_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "skill_count": 20,
+              "explicit_first_count": 9,
+              "routing_cases": 74,
+              "python_matrix": ["3.11", "3.12", "3.13"],
+              "public_boundary_audit": "passed",
+              "generated_surface": "verified",
+          }
+          Path("dist/RELEASE_PROVENANCE.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (cd dist && sha256sum \
+            codex-executive-skill-pack-${PLAIN_VERSION}.tar.gz \
+            codex-executive-skill-pack-${PLAIN_VERSION}.zip \
+            codex_executive_skill_pack-${PLAIN_VERSION}-py3-none-any.whl \
+            SKILL_MANIFEST.json \
+            RELEASE_PROVENANCE.json > SHA256SUMS.txt)
+
+      - name: Publish GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PLAIN_VERSION: ${{ steps.version.outputs.plain }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/release-notes.md" <<'EOF'
+          ## Codex Executive Skill Pack v0.1.0
+
+          Twenty modular, safety-aware Codex skill contracts with deterministic generation, explicit-first gates, and committed routing evaluations.
+
+          ### Included
+
+          - 20 generated `SKILL.md` contracts and 20 `agents/openai.yaml` interfaces.
+          - 9 explicit-first gates for higher-impact capabilities.
+          - 74 routing and negative-boundary cases.
+          - Deterministic catalog manifest and packaged inspection CLI.
+          - Python 3.11–3.13 validation, public-boundary scanning, and repeatable build checks.
+
+          ### Maturity boundary
+
+          Version 0.1.0 validates the contract and evaluation surface. It does not certify live desktop, inbox, API, file-system, or other external integrations, and it does not grant permissions or authorization.
+          EOF
+          assets=(
+            "dist/codex-executive-skill-pack-${PLAIN_VERSION}.tar.gz"
+            "dist/codex-executive-skill-pack-${PLAIN_VERSION}.zip"
+            "dist/codex_executive_skill_pack-${PLAIN_VERSION}-py3-none-any.whl"
+            "dist/SKILL_MANIFEST.json"
+            "dist/RELEASE_PROVENANCE.json"
+            "dist/SHA256SUMS.txt"
+          )
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            gh release upload "$VERSION" "${assets[@]}" --clobber
+            gh release edit "$VERSION" --title "Codex Executive Skill Pack $VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
+          else
+            gh release create "$VERSION" "${assets[@]}" --title "Codex Executive Skill Pack $VERSION" --notes-file "$RUNNER_TEMP/release-notes.md" --verify-tag
+          fi
