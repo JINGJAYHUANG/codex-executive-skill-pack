@@ -35,8 +35,27 @@ jobs:
           python-version: "3.13"
           cache: ""
 
-      - name: Apply deterministic patch
-        run: python scripts/apply_v011_hardening_once.py
+      - name: Repair transport escaping and apply deterministic patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/apply_v011_hardening_once.py")
+          text = path.read_text(encoding="utf-8")
+          replacements = {
+              r'outside.write_text("outside\n")': r'outside.write_text("outside\\n")',
+              r'self.assertEqual(outside.read_text(), "outside\n")': r'self.assertEqual(outside.read_text(), "outside\\n")',
+              "release_workflow = '''name: Release": "release_workflow = r'''name: Release",
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f"expected one transport-escape replacement for: {old}")
+              text = text.replace(old, new)
+          path.write_text(text, encoding="utf-8", newline="\n")
+          PY
+          python scripts/apply_v011_hardening_once.py
 
       - name: Regenerate references and run release gate
         run: |
