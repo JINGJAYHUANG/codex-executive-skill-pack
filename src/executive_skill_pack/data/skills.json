@@ -2,7 +2,7 @@
   "schema_version": 1,
   "pack": {
     "name": "codex-executive-skill-pack",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "maturity": "instruction-audited",
     "runtime_status": "host-dependent",
     "skill_count": 20,

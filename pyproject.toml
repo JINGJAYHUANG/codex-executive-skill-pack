@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codex-executive-skill-pack"
-version = "0.1.0"
+version = "0.1.1"
 description = "Validation, routing, evaluation, and installation tools for twenty bounded Agent Skills."
 readme = "README.md"
 requires-python = ">=3.11"

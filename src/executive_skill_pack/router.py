@@ -72,13 +72,16 @@ def route_prompt(
     boundaries.
     """
     data = catalog or load_catalog()
-    threshold = (
-        int(minimum_score)
+    raw_threshold = (
+        minimum_score
         if minimum_score is not None
-        else int(data.get("pack", {}).get("routing_minimum_score", 6))
+        else data.get("pack", {}).get("routing_minimum_score", 6)
     )
-    if minimum_score is None:
-        threshold = 6
+    if isinstance(raw_threshold, bool) or not isinstance(raw_threshold, int):
+        raise ValueError("minimum score must be an integer")
+    if raw_threshold < 0:
+        raise ValueError("minimum score must be non-negative")
+    threshold = raw_threshold
 
     normalized = _normalize(prompt)
     candidates: list[Candidate] = []
@@ -126,13 +129,18 @@ def route_prompt(
     candidates.sort(key=lambda item: (-item.score, item.name))
     ranked = tuple(candidates)
 
-    if not ranked or ranked[0].score < threshold:
+    if not ranked:
         return RouteResult(prompt, None, "direct", threshold, ranked)
 
-    # Explicit invocation always wins. Otherwise avoid pretending a close tie is
-    # certain: a margin below two points is reported as ambiguous.
+    # Explicit activation is a user decision, not an implicit relevance score.
     top = ranked[0]
-    if not top.explicit and len(ranked) > 1 and top.score - ranked[1].score < 2:
+    if top.explicit:
+        return RouteResult(prompt, top.name, "skill", threshold, ranked)
+    if top.score < threshold:
+        return RouteResult(prompt, None, "direct", threshold, ranked)
+
+    # Avoid pretending a close implicit tie is certain.
+    if len(ranked) > 1 and top.score - ranked[1].score < 2:
         return RouteResult(prompt, None, "ambiguous", threshold, ranked)
 
     return RouteResult(prompt, top.name, "skill", threshold, ranked)
