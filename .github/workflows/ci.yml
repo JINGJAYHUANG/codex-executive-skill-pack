@@ -17,6 +17,8 @@ jobs:
   test:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-24.04
+    env:
+      PYTHONPATH: src
     strategy:
       fail-fast: false
       matrix:
@@ -35,9 +37,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: ""
 
-      - name: Install package
-        run: python -m pip install --disable-pip-version-check --no-deps --no-build-isolation -e .
-
       - name: Compile
         run: python -m compileall -q src scripts tests
 
@@ -45,10 +44,10 @@ jobs:
         run: python -m unittest discover -s tests -v
 
       - name: Validate exact skill contracts
-        run: cesp validate --root . --strict
+        run: python -m executive_skill_pack validate --root . --strict
 
       - name: Run routing evaluations
-        run: cesp eval --root .
+        run: python -m executive_skill_pack eval --root .
 
       - name: Check generated reference and documentation
         run: |
@@ -64,12 +63,12 @@ jobs:
           set -euo pipefail
           target="$(mktemp -d)/repo"
           mkdir -p "$target"
-          cesp install \
+          python -m executive_skill_pack install \
             --layout repo-skills \
             --target "$target" \
             --skills web-intel-harvester,decision-memo-engine
           test ! -e "$target/.agents"
-          cesp install \
+          python -m executive_skill_pack install \
             --layout repo-skills \
             --target "$target" \
             --skills web-intel-harvester,decision-memo-engine \
@@ -91,6 +90,9 @@ jobs:
         with:
           python-version: "3.13"
           cache: ""
+
+      - name: Install pinned build tooling
+        run: python -m pip install --disable-pip-version-check setuptools==80.9.0 wheel==0.45.1
 
       - name: Build twice and compare
         shell: bash
