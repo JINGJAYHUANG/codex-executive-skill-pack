@@ -45,6 +45,12 @@ EXPLICIT_ONLY = {
     "personal-coo",
 }
 
+SEMVER = re.compile(
+    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+    r"(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$"
+)
+
+
 REQUIRED_SKILL_KEYS = {
     "name",
     "display_name",
@@ -184,6 +190,20 @@ def validate_repository(root: Path, *, strict: bool = False) -> ValidationReport
     assert manifest is not None and marketplace is not None
 
     pack = catalog.get("pack", {})
+    if not isinstance(pack, dict):
+        issues.append(Issue("error", "pack_type", "catalog/skills.json", "pack must be an object"))
+        pack = {}
+    pack_version = pack.get("version")
+    if not isinstance(pack_version, str) or not SEMVER.fullmatch(pack_version):
+        issues.append(Issue("error", "pack_version", "catalog/skills.json", "pack version must be semantic version text"))
+    routing_minimum_score = pack.get("routing_minimum_score")
+    if (
+        isinstance(routing_minimum_score, bool)
+        or not isinstance(routing_minimum_score, int)
+        or routing_minimum_score < 0
+    ):
+        issues.append(Issue("error", "routing_threshold", "catalog/skills.json", "routing_minimum_score must be a non-negative integer"))
+
     listed = catalog.get("skills", [])
     if not isinstance(listed, list):
         issues.append(Issue("error", "catalog_type", "catalog/skills.json", "skills must be an array"))
@@ -214,7 +234,7 @@ def validate_repository(root: Path, *, strict: bool = False) -> ValidationReport
                 "error",
                 "explicit_policy",
                 "catalog/skills.json",
-                "explicit-only set differs from the public v0.1.0 policy",
+                "explicit-only set differs from the public policy",
             )
         )
     if pack.get("explicit_only_count") != len(EXPLICIT_ONLY):
@@ -232,7 +252,7 @@ def validate_repository(root: Path, *, strict: bool = False) -> ValidationReport
                 "error",
                 "unexpected_integration",
                 ".codex-plugin/plugin.json",
-                "public v0.1.0 is skill-only and must not bind apps, MCP servers, or hooks",
+                "the public pack is skill-only and must not bind apps, MCP servers, or hooks",
             )
         )
 
@@ -265,6 +285,9 @@ def validate_repository(root: Path, *, strict: bool = False) -> ValidationReport
             issues.append(Issue("error", "skill_keys", f"catalog:{name}", f"missing fields: {', '.join(missing)}"))
         if skill.get("id") != position:
             issues.append(Issue("error", "skill_id", f"catalog:{name}", "id must match canonical order"))
+        skill_version = skill.get("version")
+        if not isinstance(skill_version, str) or not SEMVER.fullmatch(skill_version):
+            issues.append(Issue("error", "skill_version", f"catalog:{name}", "skill version must be semantic version text"))
         if skill.get("maturity") != "instruction-audited" or skill.get("runtime_status") != "host-dependent":
             issues.append(Issue("error", "maturity_label", f"catalog:{name}", "honest maturity labels are required"))
         description = str(skill.get("description", ""))
@@ -295,7 +318,7 @@ def validate_repository(root: Path, *, strict: bool = False) -> ValidationReport
         else:
             expected_activation = "explicit-only" if skill["explicit_only"] else "contextual"
             for key, expected in {
-                "version": "0.1.0",
+                "version": skill.get("version"),
                 "layer": skill["layer"],
                 "maturity": "instruction-audited",
                 "runtime_status": "host-dependent",

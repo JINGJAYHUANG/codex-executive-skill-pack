@@ -47,6 +47,15 @@ class CatalogTests(unittest.TestCase):
                 self.assertEqual(item["maturity"], "instruction-audited")
                 self.assertEqual(item["runtime_status"], "host-dependent")
 
+    def test_versions_and_default_threshold_are_well_formed(self):
+        catalog = load_catalog()
+        self.assertRegex(catalog["pack"]["version"], r"^\d+\.\d+\.\d+")
+        self.assertIsInstance(catalog["pack"]["routing_minimum_score"], int)
+        self.assertGreaterEqual(catalog["pack"]["routing_minimum_score"], 0)
+        for item in catalog["skills"]:
+            with self.subTest(name=item["name"]):
+                self.assertRegex(item["version"], r"^\d+\.\d+\.\d+")
+
     def test_descriptions_are_unique(self):
         descriptions = [item["description"] for item in load_catalog()["skills"]]
         self.assertEqual(len(descriptions), len(set(descriptions)))
@@ -123,6 +132,7 @@ class SkillFileTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertEqual(metadata["name"], name)
                 self.assertEqual(metadata["description"], mapping[name]["description"])
+                self.assertEqual(metadata["metadata"]["version"], mapping[name]["version"])
                 self.assertIn("## Stop conditions", body)
                 self.assertIn("## Evidence and honesty", body)
 

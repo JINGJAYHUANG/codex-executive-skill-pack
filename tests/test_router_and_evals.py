@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import unittest
 
@@ -73,6 +74,33 @@ class RouterTests(unittest.TestCase):
             minimum_score=1000,
         )
         self.assertIsNone(result.selected)
+
+    def test_catalog_default_threshold_is_respected(self):
+        catalog = copy.deepcopy(load_catalog())
+        catalog["pack"]["routing_minimum_score"] = 1000
+        result = route_prompt(
+            "Build a competitor radar for these vendors using public evidence.",
+            catalog=catalog,
+        )
+        self.assertIsNone(result.selected)
+        self.assertEqual(result.status, "direct")
+        self.assertEqual(result.minimum_score, 1000)
+
+    def test_explicit_invocation_bypasses_implicit_threshold(self):
+        result = route_prompt(
+            "$mission-control coordinate research and implementation with gates.",
+            minimum_score=1000,
+        )
+        self.assertEqual(result.selected, "mission-control")
+        self.assertEqual(result.status, "skill")
+        self.assertTrue(result.candidates[0].explicit)
+
+    def test_invalid_thresholds_are_rejected(self):
+        for value in (-1, True, "6"):
+            catalog = copy.deepcopy(load_catalog())
+            catalog["pack"]["routing_minimum_score"] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                route_prompt("Build a competitor radar.", catalog=catalog)
 
 
 class EvaluationTests(unittest.TestCase):

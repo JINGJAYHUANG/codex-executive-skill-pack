@@ -11,7 +11,7 @@ The pack is built around one rule:
 
 > Use the narrowest sufficient skill, keep evidence and permissions visible, and never represent a plan or unavailable integration as completed work.
 
-**Release status:** `v0.1.0` · `instruction-audited` · `host-dependent`
+**Release status:** `v0.1.1` · `instruction-audited` · `host-dependent`
 
 [中文说明](docs/README.zh-CN.md) · [Skill reference](docs/skill-reference.md) · [Routing model](docs/routing.md) · [Permission model](docs/permission-model.md)
 

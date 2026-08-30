@@ -92,6 +92,46 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual(plan.conflicts, 0)
             self.assertIn("name: web-intel-harvester", target.read_text())
 
+    def test_symlinked_parent_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            outside = Path(tmp) / "outside"
+            (root / ".agents").mkdir(parents=True)
+            outside.mkdir()
+            link = root / ".agents" / "skills"
+            try:
+                link.symlink_to(outside, target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symbolic links are unavailable: {exc}")
+            with self.assertRaises(InstallError):
+                plan_install(
+                    root,
+                    layout="repo-skills",
+                    names=["web-intel-harvester"],
+                    apply=True,
+                )
+
+    def test_symlinked_destination_is_rejected_even_with_replace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            outside = Path(tmp) / "outside.txt"
+            outside.write_text("outside\n")
+            target = root / ".agents/skills/web-intel-harvester/SKILL.md"
+            target.parent.mkdir(parents=True)
+            try:
+                target.symlink_to(outside)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symbolic links are unavailable: {exc}")
+            with self.assertRaises(InstallError):
+                plan_install(
+                    root,
+                    layout="repo-skills",
+                    names=["web-intel-harvester"],
+                    apply=True,
+                    replace=True,
+                )
+            self.assertEqual(outside.read_text(), "outside\n")
+
     def test_plugin_layout_contains_manifest_and_all_skills(self):
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "plugin"

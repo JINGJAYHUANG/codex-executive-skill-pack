@@ -100,6 +100,15 @@ jobs:
           SOURCE_DATE_EPOCH: "1788048000"
         run: |
           set -euo pipefail
+          version="$(python - <<'PY_VERSION'
+          import tomllib
+          from pathlib import Path
+
+          print(tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])
+          PY_VERSION
+          )"
+          wheel_name="codex_executive_skill_pack-${version}-py3-none-any.whl"
+          rm -rf /tmp/wheel-a /tmp/wheel-b
           mkdir -p /tmp/wheel-a /tmp/wheel-b
           python -m pip wheel \
             --disable-pip-version-check \
@@ -111,7 +120,7 @@ jobs:
             --no-deps \
             --no-build-isolation \
             --wheel-dir /tmp/wheel-b .
-          cmp \
-            /tmp/wheel-a/codex_executive_skill_pack-0.1.0-py3-none-any.whl \
-            /tmp/wheel-b/codex_executive_skill_pack-0.1.0-py3-none-any.whl
-          sha256sum /tmp/wheel-a/*.whl
+          test -f "/tmp/wheel-a/$wheel_name"
+          test -f "/tmp/wheel-b/$wheel_name"
+          cmp "/tmp/wheel-a/$wheel_name" "/tmp/wheel-b/$wheel_name"
+          sha256sum "/tmp/wheel-a/$wheel_name"

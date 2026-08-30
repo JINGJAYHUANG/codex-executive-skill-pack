@@ -2,6 +2,22 @@
 
 All notable public changes are documented here.
 
+## [0.1.1] — 2026-08-30
+
+### Fixed
+
+- Honor the catalog-defined implicit-routing threshold instead of silently resetting it to `6`.
+- Keep explicit skill invocation independent of the implicit-routing relevance threshold.
+- Reject invalid negative, Boolean, or non-integer routing thresholds.
+- Reject symbolic-link traversal inside installer targets, including replacement mode.
+- Validate pack and skill semantic versions without coupling unchanged skill contracts to the pack release number.
+- Bind releases to the current `main` commit and derive provenance counts from repository data.
+
+### Release engineering
+
+- Generate version-specific notes, verify checksums in their own directory, and make release asset repair idempotent.
+- Preserve the `instruction-audited` and `host-dependent` maturity boundary.
+
 ## [0.1.0] — 2026-08-30
 
 ### Added

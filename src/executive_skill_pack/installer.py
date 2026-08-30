@@ -80,6 +80,25 @@ def _safe_target(target: Path) -> Path:
     return resolved
 
 
+def _assert_no_symlink_components(path: Path, target: Path) -> None:
+    try:
+        path.relative_to(target)
+    except ValueError as exc:
+        raise InstallError("planned path escaped the installation target") from exc
+
+    current = path
+    while True:
+        if current.is_symlink():
+            relative = current.relative_to(target)
+            label = relative.as_posix() if relative.parts else "."
+            raise InstallError(
+                f"refusing to traverse symbolic link inside target: {label}"
+            )
+        if current == target:
+            return
+        current = current.parent
+
+
 def _select_skills(names: Iterable[str] | None) -> tuple[dict[str, Any], ...]:
     catalog = load_catalog()
     mapping = skill_map(catalog)
@@ -140,6 +159,7 @@ def plan_install(
     planned: list[PlannedFile] = []
 
     for path in sorted(payloads, key=lambda item: item.as_posix()):
+        _assert_no_symlink_components(path, resolved)
         content = payloads[path]
         if not path.exists():
             action = "create"
@@ -177,6 +197,7 @@ def plan_install(
                 "or pass --replace for intentional replacement"
             )
         for path, content in sorted(payloads.items(), key=lambda item: item[0].as_posix()):
+            _assert_no_symlink_components(path, resolved)
             if path.exists() and path.read_text(encoding="utf-8") == content:
                 continue
             path.parent.mkdir(parents=True, exist_ok=True)

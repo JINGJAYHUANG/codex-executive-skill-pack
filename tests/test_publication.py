@@ -87,6 +87,26 @@ class PublicationTests(unittest.TestCase):
         catalog = json.loads((ROOT / "catalog/skills.json").read_text())
         self.assertEqual(plugin["version"], catalog["pack"]["version"])
 
+    def test_release_workflow_is_dynamic_and_main_bound(self):
+        text = (ROOT / ".github/workflows/release.yml").read_text()
+        self.assertIn("release/v*", text)
+        self.assertIn("git rev-parse origin/main", text)
+        self.assertIn("sha256sum -c SHA256SUMS.txt", text)
+        self.assertIn("gh release upload", text)
+        self.assertIn("--clobber", text)
+        self.assertIn('len(catalog["skills"])', text)
+        self.assertIn("routing_cases = sum(", text)
+        self.assertNotIn("Codex Executive Skill Pack v0.1.0", text)
+
+    def test_reproducible_wheel_job_derives_current_version(self):
+        text = (ROOT / ".github/workflows/ci.yml").read_text()
+        self.assertIn("import tomllib", text)
+        self.assertIn(
+            'wheel_name="codex_executive_skill_pack-${version}-py3-none-any.whl"',
+            text,
+        )
+        self.assertNotIn("codex_executive_skill_pack-0.1.0", text)
+
     def test_skill_reference_contains_all_names(self):
         text = (ROOT / "docs/skill-reference.md").read_text()
         catalog = json.loads((ROOT / "catalog/skills.json").read_text())
