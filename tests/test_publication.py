@@ -98,6 +98,15 @@ class PublicationTests(unittest.TestCase):
         self.assertIn("routing_cases = sum(", text)
         self.assertNotIn("Codex Executive Skill Pack v0.1.0", text)
 
+    def test_reproducible_wheel_job_derives_current_version(self):
+        text = (ROOT / ".github/workflows/ci.yml").read_text()
+        self.assertIn("import tomllib", text)
+        self.assertIn(
+            'wheel_name="codex_executive_skill_pack-${version}-py3-none-any.whl"',
+            text,
+        )
+        self.assertNotIn("codex_executive_skill_pack-0.1.0", text)
+
     def test_skill_reference_contains_all_names(self):
         text = (ROOT / "docs/skill-reference.md").read_text()
         catalog = json.loads((ROOT / "catalog/skills.json").read_text())
