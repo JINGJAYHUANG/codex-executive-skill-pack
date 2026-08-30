@@ -1,0 +1,33 @@
+{
+  "name": "codex-executive-skill-pack",
+  "version": "0.1.0",
+  "description": "Twenty modular, safety-aware Codex skill contracts with deterministic routing and evaluations.",
+  "author": {
+    "name": "JINGJAYHUANG",
+    "url": "https://github.com/JINGJAYHUANG"
+  },
+  "homepage": "https://github.com/JINGJAYHUANG/codex-executive-skill-pack",
+  "repository": "https://github.com/JINGJAYHUANG/codex-executive-skill-pack",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "agent-skills",
+    "routing",
+    "evaluation",
+    "automation-safety"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Executive Skill Pack",
+    "shortDescription": "Route work across twenty bounded skill contracts",
+    "longDescription": "A skill-only Codex plugin that packages twenty modular contracts for research, decision support, workflow design, reliability, knowledge operations, and controlled execution. It includes explicit-first gates for high-impact capabilities, deterministic routing tests, and truthful maturity labels.",
+    "developerName": "JINGJAYHUANG",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive"],
+    "defaultPrompt": [
+      "List the available executive skills and their boundaries.",
+      "Route this request to the smallest sufficient skill.",
+      "Explain which skills require explicit invocation."
+    ]
+  }
+}
