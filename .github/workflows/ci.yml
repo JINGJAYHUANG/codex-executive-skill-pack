@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codex-executive-skill-pack-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: ""
+
+      - name: Install package
+        run: python -m pip install --disable-pip-version-check --no-deps -e .
+
+      - name: Compile
+        run: python -m compileall -q src scripts tests
+
+      - name: Verify generated files
+        run: python scripts/generate_skill_files.py --root . --check
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate skill pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          cesp validate --root .
+          cesp eval --root .
+
+      - name: Audit public boundary
+        run: python scripts/public_audit.py .
+
+  reproducible-build:
+    name: Reproducible wheel
+    runs-on: ubuntu-24.04
+    env:
+      SOURCE_DATE_EPOCH: "1767225600"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: ""
+
+      - name: Build twice and compare
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/build-a /tmp/build-b
+          python -m pip wheel --disable-pip-version-check --no-deps --no-build-isolation --wheel-dir /tmp/build-a .
+          rm -rf build src/*.egg-info src/codex_executive_skill_pack.egg-info
+          python -m pip wheel --disable-pip-version-check --no-deps --no-build-isolation --wheel-dir /tmp/build-b .
+          sha256sum /tmp/build-a/*.whl /tmp/build-b/*.whl
+          cmp /tmp/build-a/*.whl /tmp/build-b/*.whl
