@@ -1,0 +1,34 @@
+name: Bug report
+description: Report a reproducible validator, router, installer, or packaging defect
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Use synthetic inputs. Do not include credentials, private messages, or personal paths."
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: "v0.1.0 or commit SHA"
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Minimal command and input
+      description: Redact private data and include only the smallest reproduction.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true

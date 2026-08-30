@@ -1,0 +1,4 @@
+interface:
+  display_name: "Experience Replay"
+  short_description: "Reconstruct an incident or project from authorized artifacts and turn verified lessons into preve..."
+  default_prompt: "Replay this incident from logs and commits, separating evidence from hindsight."

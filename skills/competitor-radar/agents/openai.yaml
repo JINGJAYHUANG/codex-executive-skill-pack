@@ -1,0 +1,4 @@
+interface:
+  display_name: "Competitor Radar"
+  short_description: "Turn lawful public competitive signals into an evidence-backed strategic view."
+  default_prompt: "Build a competitor radar for these three vendors using public evidence."

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Workflow Compiler"
+  short_description: "Compile a human process into an executable, testable workflow contract."
+  default_prompt: "$workflow-compiler turn this approved SOP into a testable workflow with retries and approvals."
+policy:
+  allow_implicit_invocation: false

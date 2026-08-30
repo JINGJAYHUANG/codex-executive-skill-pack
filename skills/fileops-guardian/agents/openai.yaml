@@ -1,0 +1,6 @@
+interface:
+  display_name: "FileOps Guardian"
+  short_description: "Make consequential file operations inventory-first, previewable, verifiable, and reversible."
+  default_prompt: "$fileops-guardian inventory this folder and preview a collision-safe migration."
+policy:
+  allow_implicit_invocation: false

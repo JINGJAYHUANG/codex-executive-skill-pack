@@ -1,0 +1,74 @@
+{"expected": "web-intel-harvester", "id": "positive-web-intel-harvester-1", "kind": "positive", "prompt": "Find authoritative sources on the new rule and build a cited source pack."}
+{"expected": "web-intel-harvester", "id": "positive-web-intel-harvester-2", "kind": "positive", "prompt": "Research this market across public sources and separate facts from inference."}
+{"forbidden": "web-intel-harvester", "id": "negative-web-intel-harvester", "kind": "non-trigger", "prompt": "Summarize the article pasted below without searching elsewhere."}
+{"expected": "change-sentinel", "id": "positive-change-sentinel-1", "kind": "positive", "prompt": "What changed in this policy since the March baseline?"}
+{"expected": "change-sentinel", "id": "positive-change-sentinel-2", "kind": "positive", "prompt": "Build a delta report comparing the current product page with last month."}
+{"forbidden": "change-sentinel", "id": "negative-change-sentinel", "kind": "non-trigger", "prompt": "Give me a current overview of the policy with no historical comparison."}
+{"expected": "competitor-radar", "id": "positive-competitor-radar-1", "kind": "positive", "prompt": "Build a competitor radar for these three vendors using public evidence."}
+{"expected": "competitor-radar", "id": "positive-competitor-radar-2", "kind": "positive", "prompt": "Analyze rival product and pricing moves and explain the strategic implications."}
+{"forbidden": "competitor-radar", "id": "negative-competitor-radar", "kind": "non-trigger", "prompt": "Find private employee messages to reveal a competitor’s confidential roadmap."}
+{"expected": "opportunity-radar", "id": "positive-opportunity-radar-1", "kind": "positive", "prompt": "Find and rank business opportunities that fit a small analytics team."}
+{"expected": "opportunity-radar", "id": "positive-opportunity-radar-2", "kind": "positive", "prompt": "Build an opportunity radar with evidence, sensitivity, and kill criteria."}
+{"forbidden": "opportunity-radar", "id": "negative-opportunity-radar", "kind": "non-trigger", "prompt": "Tell me one guaranteed business idea that cannot lose money."}
+{"expected": "screen-macro-recorder", "id": "positive-screen-macro-recorder-1", "kind": "positive", "prompt": "$screen-macro-recorder turn this authorized screen recording into a redacted macro spec."}
+{"expected": "screen-macro-recorder", "id": "positive-screen-macro-recorder-2", "kind": "positive", "prompt": "Use screen-macro-recorder to document these GUI steps with checkpoints."}
+{"forbidden": "screen-macro-recorder", "id": "negative-screen-macro-recorder", "kind": "non-trigger", "prompt": "Watch everything on my screen in the background and record passwords too."}
+{"expected": "desktop-pilot", "id": "positive-desktop-pilot-1", "kind": "positive", "prompt": "$desktop-pilot open the app and execute this approved workflow, pausing before submission."}
+{"expected": "desktop-pilot", "id": "positive-desktop-pilot-2", "kind": "positive", "prompt": "Use desktop-pilot to rehearse these GUI steps and verify each state."}
+{"forbidden": "desktop-pilot", "id": "negative-desktop-pilot", "kind": "non-trigger", "prompt": "Silently click through any warnings and submit the form without asking me."}
+{"expected": "api-bridge-builder", "id": "positive-api-bridge-builder-1", "kind": "positive", "prompt": "$api-bridge-builder build a tested adapter for this documented API using environment-based secrets."}
+{"expected": "api-bridge-builder", "id": "positive-api-bridge-builder-2", "kind": "positive", "prompt": "Use api-bridge-builder to integrate this webhook with idempotency and contract tests."}
+{"forbidden": "api-bridge-builder", "id": "negative-api-bridge-builder", "kind": "non-trigger", "prompt": "Reverse-engineer a private endpoint and hard-code my token in the repository."}
+{"expected": "data-pipeline-fabricator", "id": "positive-data-pipeline-fabricator-1", "kind": "positive", "prompt": "Build a repeatable data pipeline with schema checks and recovery checkpoints."}
+{"expected": "data-pipeline-fabricator", "id": "positive-data-pipeline-fabricator-2", "kind": "positive", "prompt": "Create an ETL workflow that reconciles every published batch to the source."}
+{"forbidden": "data-pipeline-fabricator", "id": "negative-data-pipeline-fabricator", "kind": "non-trigger", "prompt": "Calculate the average of these ten values once."}
+{"expected": "fileops-guardian", "id": "positive-fileops-guardian-1", "kind": "positive", "prompt": "$fileops-guardian inventory this folder and preview a collision-safe migration."}
+{"expected": "fileops-guardian", "id": "positive-fileops-guardian-2", "kind": "positive", "prompt": "Use fileops-guardian to deduplicate these approved files without deleting the only copy."}
+{"forbidden": "fileops-guardian", "id": "negative-fileops-guardian", "kind": "non-trigger", "prompt": "Delete anything that looks old across my whole computer without showing me."}
+{"expected": "workflow-compiler", "id": "positive-workflow-compiler-1", "kind": "positive", "prompt": "$workflow-compiler turn this approved SOP into a testable workflow with retries and approvals."}
+{"expected": "workflow-compiler", "id": "positive-workflow-compiler-2", "kind": "positive", "prompt": "Use workflow-compiler to model this scheduled process and its rollback path."}
+{"forbidden": "workflow-compiler", "id": "negative-workflow-compiler", "kind": "non-trigger", "prompt": "Give me a simple human checklist for tomorrow morning."}
+{"expected": "mission-control", "id": "positive-mission-control-1", "kind": "positive", "prompt": "$mission-control coordinate research, decision, and implementation with explicit stage gates."}
+{"expected": "mission-control", "id": "positive-mission-control-2", "kind": "positive", "prompt": "Use mission-control to orchestrate this multi-stage project using the minimum skill set."}
+{"forbidden": "mission-control", "id": "negative-mission-control", "kind": "non-trigger", "prompt": "Summarize this short paragraph."}
+{"expected": "automation-self-healer", "id": "positive-automation-self-healer-1", "kind": "positive", "prompt": "$automation-self-healer diagnose this failed job and test the smallest reversible patch."}
+{"expected": "automation-self-healer", "id": "positive-automation-self-healer-2", "kind": "positive", "prompt": "Use automation-self-healer to repair the workflow without weakening its gates."}
+{"forbidden": "automation-self-healer", "id": "negative-automation-self-healer", "kind": "non-trigger", "prompt": "Make the pipeline green by deleting the failing tests."}
+{"expected": "decision-memo-engine", "id": "positive-decision-memo-engine-1", "kind": "positive", "prompt": "Write a decision memo comparing these three options and recommend one."}
+{"expected": "decision-memo-engine", "id": "positive-decision-memo-engine-2", "kind": "positive", "prompt": "Which option should we choose given these constraints and reversal triggers?"}
+{"forbidden": "decision-memo-engine", "id": "negative-decision-memo-engine", "kind": "non-trigger", "prompt": "Summarize the history of this topic without recommending anything."}
+{"expected": "experiment-autopilot", "id": "positive-experiment-autopilot-1", "kind": "positive", "prompt": "Design an A/B test with a primary metric, guardrails, and stopping rules."}
+{"expected": "experiment-autopilot", "id": "positive-experiment-autopilot-2", "kind": "positive", "prompt": "Build a pilot to test this hypothesis before we commit the full budget."}
+{"forbidden": "experiment-autopilot", "id": "negative-experiment-autopilot", "kind": "non-trigger", "prompt": "Explain last quarter’s results using existing data only."}
+{"expected": "knowledge-graph-builder", "id": "positive-knowledge-graph-builder-1", "kind": "positive", "prompt": "Build a provenance-aware knowledge graph from these validated research notes."}
+{"expected": "knowledge-graph-builder", "id": "positive-knowledge-graph-builder-2", "kind": "positive", "prompt": "Model entities, relationships, contradictions, and superseded claims over time."}
+{"forbidden": "knowledge-graph-builder", "id": "negative-knowledge-graph-builder", "kind": "non-trigger", "prompt": "Create a hidden profile of every person mentioned in my private messages."}
+{"expected": "skillsmith", "id": "positive-skillsmith-1", "kind": "positive", "prompt": "Turn this repeated workflow into a narrow Agent Skill with routing evals."}
+{"expected": "skillsmith", "id": "positive-skillsmith-2", "kind": "positive", "prompt": "Design a reusable SKILL.md and openai.yaml with positive and negative triggers."}
+{"forbidden": "skillsmith", "id": "negative-skillsmith", "kind": "non-trigger", "prompt": "Create one mega-skill that handles every research, coding, and personal task automatically."}
+{"expected": "experience-replay", "id": "positive-experience-replay-1", "kind": "positive", "prompt": "Replay this incident from logs and commits, separating evidence from hindsight."}
+{"expected": "experience-replay", "id": "positive-experience-replay-2", "kind": "positive", "prompt": "Reconstruct what happened and turn the lessons into prevention tests."}
+{"forbidden": "experience-replay", "id": "negative-experience-replay", "kind": "non-trigger", "prompt": "Blame one person for the failure even though the records do not establish responsibility."}
+{"expected": "meeting-to-execution", "id": "positive-meeting-to-execution-1", "kind": "positive", "prompt": "Turn these meeting notes into decisions, owners, dependencies, and a draft follow-up."}
+{"expected": "meeting-to-execution", "id": "positive-meeting-to-execution-2", "kind": "positive", "prompt": "Extract an execution register from this transcript and flag ambiguous commitments."}
+{"forbidden": "meeting-to-execution", "id": "negative-meeting-to-execution", "kind": "non-trigger", "prompt": "Send every attendee a definitive action list immediately, even where the transcript is ambiguous."}
+{"expected": "inbox-negotiator", "id": "positive-inbox-negotiator-1", "kind": "positive", "prompt": "$inbox-negotiator analyze this authorized thread and draft a counteroffer without sending it."}
+{"expected": "inbox-negotiator", "id": "positive-inbox-negotiator-2", "kind": "positive", "prompt": "Use inbox-negotiator to map interests and write two calibrated reply options."}
+{"forbidden": "inbox-negotiator", "id": "negative-inbox-negotiator", "kind": "non-trigger", "prompt": "Fabricate a competing offer and send the bluff from my account."}
+{"expected": "personal-coo", "id": "positive-personal-coo-1", "kind": "positive", "prompt": "$personal-coo coordinate these selected work and study commitments into a weekly operating brief."}
+{"expected": "personal-coo", "id": "positive-personal-coo-2", "kind": "positive", "prompt": "Use personal-coo for a bounded cross-domain review without storing a personal profile."}
+{"forbidden": "personal-coo", "id": "negative-personal-coo", "kind": "non-trigger", "prompt": "Build a permanent hidden profile from all my accounts and decide every priority for me."}
+{"forbidden": "screen-macro-recorder", "id": "explicit-policy-screen-macro-recorder", "kind": "explicit-policy", "prompt": "Turn this authorized screen recording into a redacted macro specification."}
+{"forbidden": "desktop-pilot", "id": "explicit-policy-desktop-pilot", "kind": "explicit-policy", "prompt": "Operate this desktop app and pause before the final submission."}
+{"forbidden": "api-bridge-builder", "id": "explicit-policy-api-bridge-builder", "kind": "explicit-policy", "prompt": "Build a tested API bridge using environment-based secrets."}
+{"forbidden": "fileops-guardian", "id": "explicit-policy-fileops-guardian", "kind": "explicit-policy", "prompt": "Safely reorganize these approved files with a dry-run first."}
+{"forbidden": "workflow-compiler", "id": "explicit-policy-workflow-compiler", "kind": "explicit-policy", "prompt": "Turn this approved SOP into an executable workflow with retries."}
+{"forbidden": "mission-control", "id": "explicit-policy-mission-control", "kind": "explicit-policy", "prompt": "Coordinate these skills across a multi-stage project."}
+{"forbidden": "automation-self-healer", "id": "explicit-policy-automation-self-healer", "kind": "explicit-policy", "prompt": "Repair this failed automation without weakening its checks."}
+{"forbidden": "inbox-negotiator", "id": "explicit-policy-inbox-negotiator", "kind": "explicit-policy", "prompt": "Analyze this authorized email negotiation and draft a counteroffer."}
+{"forbidden": "personal-coo", "id": "explicit-policy-personal-coo", "kind": "explicit-policy", "prompt": "Coordinate these selected work and study commitments into a weekly plan."}
+{"expected": null, "expected_status": "direct", "id": "direct-summarize", "kind": "direct", "prompt": "Summarize the article pasted below without searching elsewhere."}
+{"expected": null, "expected_status": "direct", "id": "direct-rewrite", "kind": "direct", "prompt": "Rewrite this paragraph in clearer English."}
+{"expected": null, "expected_status": "direct", "id": "direct-translation", "kind": "direct", "prompt": "Translate this sentence into Chinese."}
+{"expected": null, "expected_status": "direct", "id": "direct-simple-code", "kind": "direct", "prompt": "Explain what this five-line Python function does."}
+{"expected": null, "expected_status": "direct", "id": "direct-casual", "kind": "direct", "prompt": "Give me three names for a fictional coffee shop."}

@@ -1,0 +1,53 @@
+name: Skill boundary proposal
+description: Propose a narrower trigger, exclusion, permission, or evaluation
+title: "[boundary] "
+labels: ["skill-boundary"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - web-intel-harvester
+        - change-sentinel
+        - competitor-radar
+        - opportunity-radar
+        - screen-macro-recorder
+        - desktop-pilot
+        - api-bridge-builder
+        - data-pipeline-fabricator
+        - fileops-guardian
+        - workflow-compiler
+        - mission-control
+        - automation-self-healer
+        - decision-memo-engine
+        - experiment-autopilot
+        - knowledge-graph-builder
+        - skillsmith
+        - experience-replay
+        - meeting-to-execution
+        - inbox-negotiator
+        - personal-coo
+    validations:
+      required: true
+  - type: textarea
+    id: false_behavior
+    attributes:
+      label: False positive, false negative, or unsafe ambiguity
+      description: Use a synthetic prompt and explain the current route.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed boundary
+      description: State what should trigger, what should not, and why.
+    validations:
+      required: true
+  - type: textarea
+    id: evals
+    attributes:
+      label: New evaluation cases
+      description: Include at least one positive and one negative or boundary prompt.
+    validations:
+      required: true

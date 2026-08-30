@@ -1,0 +1,6 @@
+interface:
+  display_name: "Inbox Negotiator"
+  short_description: "Analyze an authorized message thread and draft a calibrated negotiation response without sending it."
+  default_prompt: "$inbox-negotiator analyze this authorized thread and draft a counteroffer without sending it."
+policy:
+  allow_implicit_invocation: false

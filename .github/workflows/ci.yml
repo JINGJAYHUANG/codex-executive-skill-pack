@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codex-executive-skill-pack-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONPATH: src
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: ""
+
+      - name: Compile
+        run: python -m compileall -q src scripts tests
+
+      - name: Run unit and integration tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate exact skill contracts
+        run: python -m executive_skill_pack validate --root . --strict
+
+      - name: Run routing evaluations
+        run: python -m executive_skill_pack eval --root .
+
+      - name: Check generated reference and documentation
+        run: |
+          python scripts/generate_reference.py --root . --check
+          python scripts/check_docs.py --root .
+
+      - name: Audit public boundary
+        run: python scripts/public_audit.py .
+
+      - name: Smoke-test preview-first installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(mktemp -d)/repo"
+          mkdir -p "$target"
+          python -m executive_skill_pack install \
+            --layout repo-skills \
+            --target "$target" \
+            --skills web-intel-harvester,decision-memo-engine
+          test ! -e "$target/.agents"
+          python -m executive_skill_pack install \
+            --layout repo-skills \
+            --target "$target" \
+            --skills web-intel-harvester,decision-memo-engine \
+            --apply
+          test -f "$target/.agents/skills/web-intel-harvester/SKILL.md"
+
+  reproducible-wheel:
+    name: Reproducible wheel
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: ""
+
+      - name: Install pinned build tooling
+        run: python -m pip install --disable-pip-version-check setuptools==80.9.0 wheel==0.45.1
+
+      - name: Build twice and compare
+        shell: bash
+        env:
+          SOURCE_DATE_EPOCH: "1788048000"
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/wheel-a /tmp/wheel-b
+          python -m pip wheel \
+            --disable-pip-version-check \
+            --no-deps \
+            --no-build-isolation \
+            --wheel-dir /tmp/wheel-a .
+          python -m pip wheel \
+            --disable-pip-version-check \
+            --no-deps \
+            --no-build-isolation \
+            --wheel-dir /tmp/wheel-b .
+          cmp \
+            /tmp/wheel-a/codex_executive_skill_pack-0.1.0-py3-none-any.whl \
+            /tmp/wheel-b/codex_executive_skill_pack-0.1.0-py3-none-any.whl
+          sha256sum /tmp/wheel-a/*.whl

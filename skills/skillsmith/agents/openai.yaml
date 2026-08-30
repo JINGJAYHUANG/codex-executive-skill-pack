@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skillsmith"
+  short_description: "Turn a repeated workflow into a narrow, testable, distributable Agent Skill."
+  default_prompt: "Turn this repeated workflow into a narrow Agent Skill with routing evals."

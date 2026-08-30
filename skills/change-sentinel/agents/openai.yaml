@@ -1,0 +1,4 @@
+interface:
+  display_name: "Change Sentinel"
+  short_description: "Detect material changes between a defined baseline and an as-of state."
+  default_prompt: "What changed in this policy since the March baseline?"

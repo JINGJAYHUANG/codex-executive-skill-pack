@@ -1,0 +1,4 @@
+interface:
+  display_name: "Knowledge Graph Builder"
+  short_description: "Model validated claims as time-aware entities and relationships with provenance, confidence, and..."
+  default_prompt: "Build a provenance-aware knowledge graph from these validated research notes."

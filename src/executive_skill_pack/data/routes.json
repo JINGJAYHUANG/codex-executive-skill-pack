@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "default_policy": {
+    "mode": "direct-first",
+    "minimum_score": 6,
+    "explicit_only_requires_name": true,
+    "mission_control_never_implicit": true,
+    "handoffs_are_advisory": true,
+    "external_writes_require_separate_approval": true
+  },
+  "edges": [
+    {
+      "from": "web-intel-harvester",
+      "to": "change-sentinel",
+      "when": "A baseline source pack exists and the question is what changed."
+    },
+    {
+      "from": "change-sentinel",
+      "to": "competitor-radar",
+      "when": "The detected change affects a named competitive set."
+    },
+    {
+      "from": "change-sentinel",
+      "to": "opportunity-radar",
+      "when": "The detected change may open an actionable gap."
+    },
+    {
+      "from": "competitor-radar",
+      "to": "decision-memo-engine",
+      "when": "Competitive evidence must support a bounded decision."
+    },
+    {
+      "from": "opportunity-radar",
+      "to": "decision-memo-engine",
+      "when": "A screened opportunity needs an explicit recommendation."
+    },
+    {
+      "from": "screen-macro-recorder",
+      "to": "skillsmith",
+      "when": "A consented recording reveals a repeatable workflow worth packaging."
+    },
+    {
+      "from": "skillsmith",
+      "to": "workflow-compiler",
+      "when": "A skill design needs an executable, resumable workflow."
+    },
+    {
+      "from": "workflow-compiler",
+      "to": "desktop-pilot",
+      "when": "A reviewed workflow requires explicitly approved UI execution."
+    },
+    {
+      "from": "api-bridge-builder",
+      "to": "data-pipeline-fabricator",
+      "when": "A verified API adapter must feed a validated data pipeline."
+    },
+    {
+      "from": "data-pipeline-fabricator",
+      "to": "automation-self-healer",
+      "when": "A running pipeline needs bounded failure recovery."
+    },
+    {
+      "from": "fileops-guardian",
+      "to": "workflow-compiler",
+      "when": "A file mutation plan should become a checkpointed workflow."
+    },
+    {
+      "from": "experiment-autopilot",
+      "to": "decision-memo-engine",
+      "when": "Experiment evidence is decision-ready."
+    },
+    {
+      "from": "experiment-autopilot",
+      "to": "experience-replay",
+      "when": "An experiment failed or produced an unexpected result."
+    },
+    {
+      "from": "experience-replay",
+      "to": "knowledge-graph-builder",
+      "when": "Verified lessons should become time-aware reusable knowledge."
+    },
+    {
+      "from": "knowledge-graph-builder",
+      "to": "skillsmith",
+      "when": "Repeated evidence-backed practice is stable enough to package."
+    },
+    {
+      "from": "meeting-to-execution",
+      "to": "personal-coo",
+      "when": "Explicitly selected commitments need cross-domain coordination."
+    },
+    {
+      "from": "inbox-negotiator",
+      "to": "personal-coo",
+      "when": "An approved negotiation outcome changes selected commitments."
+    },
+    {
+      "from": "workflow-compiler",
+      "to": "personal-coo",
+      "when": "A reviewed workflow must be scheduled among selected commitments."
+    },
+    {
+      "from": "decision-memo-engine",
+      "to": "personal-coo",
+      "when": "An approved decision changes the bounded operating plan."
+    }
+  ]
+}

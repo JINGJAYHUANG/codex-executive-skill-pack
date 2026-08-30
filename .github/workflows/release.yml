@@ -1,0 +1,158 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codex-executive-skill-pack-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Verify and publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: src
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: ""
+
+      - name: Verify release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import tomllib
+          from pathlib import Path
+
+          tag = os.environ["GITHUB_REF_NAME"]
+          if not tag.startswith("v"):
+              raise SystemExit("release tag must start with v")
+          expected = tag[1:]
+          project = tomllib.loads(Path("pyproject.toml").read_text())['project']['version']
+          plugin = json.loads(Path(".codex-plugin/plugin.json").read_text())['version']
+          catalog = json.loads(Path("catalog/skills.json").read_text())['pack']['version']
+          versions = {"tag": expected, "project": project, "plugin": plugin, "catalog": catalog}
+          if len(set(versions.values())) != 1:
+              raise SystemExit(f"version mismatch: {versions}")
+          print(versions)
+          PY
+
+      - name: Re-run release gates
+        run: |
+          python -m compileall -q src scripts tests
+          python scripts/run_release_gate.py
+          python -m executive_skill_pack validate --root . --strict
+          python -m executive_skill_pack eval --root .
+
+      - name: Install pinned build tooling
+        run: python -m pip install --disable-pip-version-check setuptools==80.9.0 wheel==0.45.1
+
+      - name: Build release assets
+        shell: bash
+        env:
+          SOURCE_DATE_EPOCH: "1788048000"
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          mkdir -p dist
+          prefix="codex-executive-skill-pack-${version}/"
+          git archive --format=tar --prefix="$prefix" "$GITHUB_REF_NAME" \
+            | gzip -n > "dist/codex-executive-skill-pack-${version}.tar.gz"
+          git archive --format=zip --prefix="$prefix" "$GITHUB_REF_NAME" \
+            > "dist/codex-executive-skill-pack-${version}.zip"
+          python -m pip wheel \
+            --disable-pip-version-check \
+            --no-deps \
+            --no-build-isolation \
+            --wheel-dir dist .
+          GITHUB_REF_NAME="$GITHUB_REF_NAME" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "schema_version": 1,
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "tag": os.environ["GITHUB_REF_NAME"],
+              "commit": os.environ["GITHUB_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "workflow_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "skill_count": 20,
+              "explicit_only_count": 9,
+              "routing_cases": 74,
+              "python_matrix": ["3.11", "3.12", "3.13"],
+              "maturity": "instruction-audited",
+              "runtime_status": "host-dependent",
+              "public_boundary_audit": "passed",
+          }
+          Path("dist/RELEASE_PROVENANCE.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (
+            cd dist
+            sha256sum \
+              "codex-executive-skill-pack-${version}.tar.gz" \
+              "codex-executive-skill-pack-${version}.zip" \
+              "codex_executive_skill_pack-${version}-py3-none-any.whl" \
+              RELEASE_PROVENANCE.json \
+              > SHA256SUMS.txt
+          )
+
+      - name: Publish GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          cat > "$RUNNER_TEMP/release-notes.md" <<'EOF'
+          ## Codex Executive Skill Pack v0.1.0
+
+          A skill-only plugin containing 20 bounded Agent Skills across intelligence, engineering, decision learning, and explicitly approved operations.
+
+          ### Verified in this release
+
+          - Exact 20 names and canonical order.
+          - Nine explicit-only skills using `allow_implicit_invocation: false`.
+          - 74 deterministic routing cases.
+          - Structural, route-graph, permission, installer, documentation, and public-boundary gates.
+          - Python 3.11–3.13 compatibility.
+          - Reproducible wheel check.
+          - Source archives, wheel, SHA-256 manifest, and release provenance.
+
+          ### Explicit limit
+
+          `instruction-audited` does not mean every skill has been production-tested in every ChatGPT or Codex host or against real desktop, inbox, calendar, account, or connector integrations. This release bundles no credentials, MCP server, app binding, desktop driver, or personal profile.
+          EOF
+          assets=(
+            "dist/codex-executive-skill-pack-${version}.tar.gz"
+            "dist/codex-executive-skill-pack-${version}.zip"
+            "dist/codex_executive_skill_pack-${version}-py3-none-any.whl"
+            "dist/SHA256SUMS.txt"
+            "dist/RELEASE_PROVENANCE.json"
+          )
+          gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
+            --title "Codex Executive Skill Pack $GITHUB_REF_NAME" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
+            --verify-tag

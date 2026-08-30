@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Pipeline Fabricator"
+  short_description: "Turn a source-to-target data contract into a repeatable, observable pipeline."
+  default_prompt: "Build a repeatable data pipeline with schema checks and recovery checkpoints."

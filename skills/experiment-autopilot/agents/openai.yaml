@@ -1,0 +1,4 @@
+interface:
+  display_name: "Experiment Autopilot"
+  short_description: "Design a falsifiable experiment with preregistered metrics, stops, and analysis."
+  default_prompt: "Design an A/B test with a primary metric, guardrails, and stopping rules."

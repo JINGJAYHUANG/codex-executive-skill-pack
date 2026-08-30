@@ -1,0 +1,6 @@
+interface:
+  display_name: "Mission Control"
+  short_description: "Coordinate a complex, explicitly authorized mission using the minimum useful skill set."
+  default_prompt: "$mission-control coordinate research, decision, and implementation with explicit stage gates."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,38 @@
+{
+  "name": "codex-executive-skill-pack",
+  "version": "0.1.0",
+  "description": "Twenty bounded, evidence-aware Agent Skills for research, engineering, decision support, learning, and explicitly approved operations.",
+  "author": {
+    "name": "JINGJAYHUANG"
+  },
+  "homepage": "https://github.com/JINGJAYHUANG/codex-executive-skill-pack",
+  "repository": "https://github.com/JINGJAYHUANG/codex-executive-skill-pack",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "agent-skills",
+    "workflow",
+    "research",
+    "automation",
+    "decision-support",
+    "evaluation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Executive Skill Pack",
+    "shortDescription": "20 bounded skills with routing, approvals, and evals",
+    "longDescription": "A skill-only plugin for evidence-aware research, engineering, decision support, learning, and explicitly approved operations. Includes precise activation boundaries, machine-readable catalogs, policy tests, and a deterministic reference router.",
+    "developerName": "JINGJAYHUANG",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/JINGJAYHUANG/codex-executive-skill-pack",
+    "defaultPrompt": [
+      "Show the 20 skills and explain which are explicit-only.",
+      "Route this task using the narrowest sufficient skill.",
+      "Validate the skill pack and run its routing evaluations."
+    ]
+  }
+}

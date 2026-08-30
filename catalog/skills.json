@@ -1,0 +1,1553 @@
+{
+  "schema_version": 1,
+  "pack": {
+    "name": "codex-executive-skill-pack",
+    "version": "0.1.0",
+    "maturity": "instruction-audited",
+    "runtime_status": "host-dependent",
+    "skill_count": 20,
+    "explicit_only_count": 9,
+    "license": "MIT",
+    "public_boundary": "No account credentials, private paths, personal profiles, production connectors, or hidden autonomy are included.",
+    "routing_minimum_score": 6
+  },
+  "layers": [
+    {
+      "id": "intelligence",
+      "label": "Layer 1 — Intelligence",
+      "skill_count": 4
+    },
+    {
+      "id": "engineering-execution",
+      "label": "Layer 2 — Engineering & Execution",
+      "skill_count": 6
+    },
+    {
+      "id": "decision-learning",
+      "label": "Layer 3 — Decision & Learning",
+      "skill_count": 5
+    },
+    {
+      "id": "orchestration-operations",
+      "label": "Layer 4 — Orchestration & Operations",
+      "skill_count": 5
+    }
+  ],
+  "skills": [
+    {
+      "id": 1,
+      "name": "web-intel-harvester",
+      "display_name": "Web Intel Harvester",
+      "layer": "intelligence",
+      "purpose": "Collect public web evidence into a structured, cited source pack before analysis begins.",
+      "description": "Collect and normalize public web evidence into a cited source pack. Use when a task requires multi-source online research, primary-source verification, freshness checks, or a reusable evidence ledger; do not use for summarizing text already supplied by the user.",
+      "explicit_only": false,
+      "risk": "low",
+      "permissions": [
+        "network_read",
+        "local_write_optional"
+      ],
+      "inputs": [
+        "research question and decision context",
+        "time window and geography",
+        "source-quality requirements",
+        "exclusions and evidence format"
+      ],
+      "outputs": [
+        "source ledger with retrieval dates",
+        "claim-to-source map",
+        "fact/inference separation",
+        "coverage gaps and unresolved conflicts"
+      ],
+      "use_when": [
+        "The answer depends on multiple current public sources.",
+        "Primary sources must be found and compared.",
+        "The research should be reusable by another analyst."
+      ],
+      "avoid_when": [
+        "The user already supplied all source text.",
+        "The task is creative writing with no research need.",
+        "Access would require private accounts that were not authorized."
+      ],
+      "workflow": [
+        "Define the decision question, time boundary, source tiers, and stopping rule.",
+        "Build a source map that prioritizes official and primary evidence before commentary.",
+        "Collect only the minimum material needed to answer the question; record dates and ownership.",
+        "Normalize claims, deduplicate near-identical reports, and preserve conflicting evidence.",
+        "Return a source ledger, supported findings, open gaps, and the exact as-of date."
+      ],
+      "failure_modes": [
+        "Treating a search-result snippet as the underlying evidence.",
+        "Mixing event date, publication date, and retrieval date.",
+        "Hiding source disagreement behind one confident summary."
+      ],
+      "keywords": [
+        "public web research",
+        "authoritative sources",
+        "source pack",
+        "evidence ledger",
+        "primary-source verification",
+        "cited research"
+      ],
+      "phrases": [
+        "find authoritative sources",
+        "build a source pack",
+        "research this across the web",
+        "collect public evidence",
+        "research this market across public sources"
+      ],
+      "anti_keywords": [
+        "summarize this text",
+        "rewrite this paragraph"
+      ],
+      "positive_prompts": [
+        "Find authoritative sources on the new rule and build a cited source pack.",
+        "Research this market across public sources and separate facts from inference."
+      ],
+      "negative_prompt": "Summarize the article pasted below without searching elsewhere.",
+      "negative_reason": "All relevant text is already supplied; direct summarization is narrower and safer.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 2,
+      "name": "change-sentinel",
+      "display_name": "Change Sentinel",
+      "layer": "intelligence",
+      "purpose": "Detect material changes between a defined baseline and an as-of state.",
+      "description": "Compare a current state with an explicit baseline and report material changes, confidence, and downstream implications. Use for monitoring policies, products, repositories, markets, documents, or operating metrics over time; do not use when no baseline can be defined.",
+      "explicit_only": false,
+      "risk": "low",
+      "permissions": [
+        "network_read_optional",
+        "local_read",
+        "local_write_optional"
+      ],
+      "inputs": [
+        "baseline snapshot or date",
+        "current snapshot or retrieval plan",
+        "materiality thresholds",
+        "entities and dimensions to monitor"
+      ],
+      "outputs": [
+        "delta ledger",
+        "materiality and confidence labels",
+        "unchanged-but-important controls",
+        "downstream watch items"
+      ],
+      "use_when": [
+        "The user asks what changed since a date or version.",
+        "A recurring monitor needs a stable baseline.",
+        "A change must be distinguished from noisy rewording."
+      ],
+      "avoid_when": [
+        "There is no defensible baseline.",
+        "The task asks only for the current state.",
+        "The compared sources use incompatible definitions that cannot be reconciled."
+      ],
+      "workflow": [
+        "Freeze the baseline, current as-of time, entities, and comparison dimensions.",
+        "Normalize definitions, units, and document versions before computing differences.",
+        "Classify each delta as added, removed, modified, unchanged, or definition-shifted.",
+        "Score materiality using user-defined thresholds and explain uncertainty.",
+        "Return the delta ledger, causal implications, and next monitoring triggers."
+      ],
+      "failure_modes": [
+        "Calling a source refresh a real-world change.",
+        "Comparing values with different units or definitions.",
+        "Reporting only changes and omitting important non-changes."
+      ],
+      "keywords": [
+        "what changed",
+        "change monitor",
+        "baseline comparison",
+        "delta report",
+        "since last version",
+        "material change"
+      ],
+      "phrases": [
+        "compare with the baseline",
+        "what changed since",
+        "monitor changes to",
+        "build a delta report",
+        "what changed in"
+      ],
+      "anti_keywords": [
+        "current overview only"
+      ],
+      "positive_prompts": [
+        "What changed in this policy since the March baseline?",
+        "Build a delta report comparing the current product page with last month."
+      ],
+      "negative_prompt": "Give me a current overview of the policy with no historical comparison.",
+      "negative_reason": "A current-state research skill is sufficient because no baseline is requested.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 3,
+      "name": "competitor-radar",
+      "display_name": "Competitor Radar",
+      "layer": "intelligence",
+      "purpose": "Turn lawful public competitive signals into an evidence-backed strategic view.",
+      "description": "Analyze lawful public signals from competitors and adjacent players across products, pricing, hiring, partnerships, distribution, and positioning. Use for competitive-landscape questions and recurring competitor monitoring; never use for intrusion, impersonation, private surveillance, or unsupported intent claims.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "network_read_optional",
+        "local_write_optional"
+      ],
+      "inputs": [
+        "focal organization or product",
+        "competitor set or discovery rule",
+        "comparison dimensions",
+        "time window and decision to support"
+      ],
+      "outputs": [
+        "competitor signal matrix",
+        "evidence and confidence labels",
+        "strategic hypotheses",
+        "watch list and disconfirming signals"
+      ],
+      "use_when": [
+        "A company needs a structured view of rival moves.",
+        "Competitive signals must be compared across common dimensions.",
+        "The user wants implications rather than a list of news."
+      ],
+      "avoid_when": [
+        "The request involves non-public personal data.",
+        "The user asks to infer confidential strategy without evidence.",
+        "The task is a broad market-size study without competitor focus."
+      ],
+      "workflow": [
+        "Define the focal decision, competitor inclusion rule, and lawful evidence boundary.",
+        "Collect comparable public signals and tag each by source, date, and confidence.",
+        "Separate observed actions from hypotheses about intent.",
+        "Compare direction, pace, capability, and likely constraints across competitors.",
+        "Return strategic implications, counter-explanations, and signals to monitor."
+      ],
+      "failure_modes": [
+        "Equating marketing language with operational capability.",
+        "Inferring motive from one isolated signal.",
+        "Comparing different product tiers as if they were equivalent."
+      ],
+      "keywords": [
+        "competitor analysis",
+        "competitive intelligence",
+        "rival moves",
+        "competitive landscape",
+        "competitor monitoring",
+        "pricing comparison"
+      ],
+      "phrases": [
+        "analyze competitor moves",
+        "build a competitor radar",
+        "compare rival positioning",
+        "monitor these competitors",
+        "rival product and pricing moves"
+      ],
+      "anti_keywords": [
+        "private surveillance",
+        "steal credentials",
+        "impersonate"
+      ],
+      "positive_prompts": [
+        "Build a competitor radar for these three vendors using public evidence.",
+        "Analyze rival product and pricing moves and explain the strategic implications."
+      ],
+      "negative_prompt": "Find private employee messages to reveal a competitor’s confidential roadmap.",
+      "negative_reason": "The request crosses the lawful public-evidence boundary and must not be performed.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 4,
+      "name": "opportunity-radar",
+      "display_name": "Opportunity Radar",
+      "layer": "intelligence",
+      "purpose": "Discover and rank opportunities against explicit capabilities, constraints, and kill criteria.",
+      "description": "Identify, screen, and rank business, product, research, or automation opportunities using explicit evidence, constraints, uncertainty, and kill criteria. Use when the user needs a prioritized opportunity portfolio rather than an unfiltered idea list; do not present scores as forecasts or guarantees.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "network_read_optional",
+        "local_write_optional"
+      ],
+      "inputs": [
+        "objective and capability set",
+        "budget and time horizon",
+        "market or problem scope",
+        "screening criteria and exclusions"
+      ],
+      "outputs": [
+        "opportunity cards",
+        "weighted ranking and sensitivity",
+        "assumptions and evidence gaps",
+        "validation plan and kill criteria"
+      ],
+      "use_when": [
+        "The user wants to find high-potential opportunities.",
+        "Many ideas need comparable screening.",
+        "A recommendation must reflect resource constraints."
+      ],
+      "avoid_when": [
+        "The user asks for guaranteed returns.",
+        "There is no decision owner or objective.",
+        "The task is already narrowed to one implementation choice."
+      ],
+      "workflow": [
+        "Define the objective, capability advantage, constraints, and non-goals.",
+        "Generate a broad candidate set from evidence rather than novelty alone.",
+        "Score candidates on value, feasibility, timing, defensibility, and evidence quality.",
+        "Run sensitivity analysis and identify assumptions that reverse the ranking.",
+        "Return a short portfolio with validation steps and explicit kill criteria."
+      ],
+      "failure_modes": [
+        "Ranking ideas before defining constraints.",
+        "Treating market size as accessible value.",
+        "Ignoring execution burden and evidence quality."
+      ],
+      "keywords": [
+        "business opportunity",
+        "market opportunity",
+        "white space",
+        "unmet need",
+        "opportunity ranking",
+        "prioritize ideas"
+      ],
+      "phrases": [
+        "find and rank opportunities",
+        "build an opportunity radar",
+        "identify white-space opportunities",
+        "screen these business ideas",
+        "find and rank business opportunities"
+      ],
+      "anti_keywords": [
+        "guaranteed profit",
+        "risk free return"
+      ],
+      "positive_prompts": [
+        "Find and rank business opportunities that fit a small analytics team.",
+        "Build an opportunity radar with evidence, sensitivity, and kill criteria."
+      ],
+      "negative_prompt": "Tell me one guaranteed business idea that cannot lose money.",
+      "negative_reason": "Opportunity analysis cannot guarantee outcomes and must preserve uncertainty.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 5,
+      "name": "screen-macro-recorder",
+      "display_name": "Screen Macro Recorder",
+      "layer": "engineering-execution",
+      "purpose": "Convert an authorized screen trace into a redacted, reproducible macro specification.",
+      "description": "Convert a user-authorized screen recording, screenshots, or step trace into a redacted macro specification with selectors, checkpoints, and uncertainty. Invoke only when the user explicitly requests this skill or explicitly asks to turn an observed GUI process into a macro; never capture passwords, private messages, or unrelated screen regions.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "screen_read_authorized",
+        "local_write"
+      ],
+      "inputs": [
+        "authorized recording or ordered screenshots",
+        "application and operating context",
+        "allowed screen regions",
+        "redaction requirements and desired automation target"
+      ],
+      "outputs": [
+        "step graph",
+        "selector and fallback map",
+        "redaction ledger",
+        "uncertainty and replay checkpoints"
+      ],
+      "use_when": [
+        "The user explicitly asks to turn a GUI demonstration into repeatable steps.",
+        "A brittle manual process needs a selector-aware macro specification.",
+        "The input screen material is authorized and scoped."
+      ],
+      "avoid_when": [
+        "The user did not explicitly authorize screen-derived work.",
+        "The material includes secrets that cannot be safely redacted.",
+        "A documented API or command-line path is more reliable."
+      ],
+      "workflow": [
+        "Confirm explicit scope, authorized application, excluded regions, and redaction rules.",
+        "Segment the trace into observable states, user actions, waits, and expected outcomes.",
+        "Prefer semantic selectors; record image or coordinate fallbacks only when necessary.",
+        "Mark credential entry, irreversible actions, and ambiguous transitions as manual checkpoints.",
+        "Return a replayable macro specification, not an unreviewed executable."
+      ],
+      "failure_modes": [
+        "Capturing unrelated windows or notifications.",
+        "Encoding raw coordinates without state checks.",
+        "Storing secrets inside the macro specification."
+      ],
+      "keywords": [
+        "screen macro",
+        "record GUI steps",
+        "screen recording to automation",
+        "repeat clicks",
+        "macro specification"
+      ],
+      "phrases": [
+        "turn this screen recording into a macro",
+        "record these gui steps",
+        "use the screen macro recorder"
+      ],
+      "anti_keywords": [
+        "password capture",
+        "spy on screen"
+      ],
+      "positive_prompts": [
+        "$screen-macro-recorder turn this authorized screen recording into a redacted macro spec.",
+        "Use screen-macro-recorder to document these GUI steps with checkpoints."
+      ],
+      "negative_prompt": "Watch everything on my screen in the background and record passwords too.",
+      "negative_reason": "The skill requires explicit, narrow authorization and excludes credential capture and ambient monitoring.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 6,
+      "name": "desktop-pilot",
+      "display_name": "Desktop Pilot",
+      "layer": "engineering-execution",
+      "purpose": "Execute or rehearse authorized GUI workflows with previews, checkpoints, and rollback awareness.",
+      "description": "Plan, rehearse, or execute a narrowly scoped desktop GUI workflow with state checks and explicit approval gates. Invoke only when the user explicitly requests desktop operation or names this skill; never bypass access controls, enter secrets supplied from hidden sources, or perform irreversible actions without a final confirmation.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "desktop_control",
+        "local_write_optional",
+        "external_write_optional"
+      ],
+      "inputs": [
+        "target application and start state",
+        "ordered objective",
+        "allowed actions and forbidden actions",
+        "confirmation and rollback policy"
+      ],
+      "outputs": [
+        "preflight plan",
+        "checkpointed action log",
+        "result verification",
+        "exceptions and rollback state"
+      ],
+      "use_when": [
+        "The user explicitly asks the agent to operate a desktop application.",
+        "A GUI-only workflow cannot be completed through a safer API.",
+        "The target, scope, and confirmation boundary are clear."
+      ],
+      "avoid_when": [
+        "A stable API or CLI is available and preferable.",
+        "The user has not approved external writes.",
+        "The requested action bypasses security or causes hidden side effects."
+      ],
+      "workflow": [
+        "Confirm the application, account context, allowed actions, and irreversible boundary.",
+        "Inspect the current state and present the shortest safe action plan.",
+        "Execute one checkpointed transition at a time and verify the expected state.",
+        "Pause before sends, purchases, deletes, permission changes, or other consequential writes.",
+        "Return an action log, verification evidence, and any remaining manual step."
+      ],
+      "failure_modes": [
+        "Continuing after the UI diverges from the expected state.",
+        "Clicking based only on coordinates.",
+        "Treating a visual success message as proof of the external outcome."
+      ],
+      "keywords": [
+        "desktop automation",
+        "operate the app",
+        "click through",
+        "fill the form",
+        "GUI workflow"
+      ],
+      "phrases": [
+        "use desktop pilot",
+        "operate this desktop app",
+        "execute these gui steps"
+      ],
+      "anti_keywords": [
+        "bypass login",
+        "disable security"
+      ],
+      "positive_prompts": [
+        "$desktop-pilot open the app and execute this approved workflow, pausing before submission.",
+        "Use desktop-pilot to rehearse these GUI steps and verify each state."
+      ],
+      "negative_prompt": "Silently click through any warnings and submit the form without asking me.",
+      "negative_reason": "Consequential GUI writes require explicit checkpoints and cannot suppress warnings.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 7,
+      "name": "api-bridge-builder",
+      "display_name": "API Bridge Builder",
+      "layer": "engineering-execution",
+      "purpose": "Build a narrow, tested adapter between a documented API and a local workflow.",
+      "description": "Design and implement a narrow adapter around a documented API with typed contracts, secret isolation, retries, and contract tests. Invoke only when the user explicitly asks to build an API integration or names this skill; never embed credentials, scrape an undocumented private endpoint, or broaden scopes beyond the stated workflow.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "network_read",
+        "network_write_optional",
+        "local_write",
+        "secrets_reference_only"
+      ],
+      "inputs": [
+        "official API documentation",
+        "authentication method and allowed scopes",
+        "input/output contracts",
+        "rate limits, failure policy, and target workflow"
+      ],
+      "outputs": [
+        "adapter interface",
+        "configuration schema",
+        "contract and failure tests",
+        "runbook with secret and rate-limit handling"
+      ],
+      "use_when": [
+        "The user explicitly requests a connector or adapter.",
+        "A repeatable workflow needs a documented API boundary.",
+        "Authentication scopes and ownership are known."
+      ],
+      "avoid_when": [
+        "The only available endpoint is undocumented or prohibited.",
+        "Credentials would need to be committed to source.",
+        "The user merely needs one manual data lookup."
+      ],
+      "workflow": [
+        "Freeze the smallest API surface, authentication scopes, and data contract.",
+        "Separate transport, authentication, domain mapping, and retry logic.",
+        "Use environment or host secret stores; include placeholders only.",
+        "Add contract tests, rate-limit behavior, idempotency, and dry-run fixtures.",
+        "Return code, configuration documentation, operational limits, and rollback guidance."
+      ],
+      "failure_modes": [
+        "Coupling business logic directly to HTTP calls.",
+        "Logging tokens or sensitive payloads.",
+        "Retrying non-idempotent writes without a request identity."
+      ],
+      "keywords": [
+        "API integration",
+        "connector adapter",
+        "webhook bridge",
+        "API client",
+        "service integration"
+      ],
+      "phrases": [
+        "build an api bridge",
+        "create a connector for",
+        "integrate this documented api"
+      ],
+      "anti_keywords": [
+        "steal api key",
+        "undocumented private endpoint"
+      ],
+      "positive_prompts": [
+        "$api-bridge-builder build a tested adapter for this documented API using environment-based secrets.",
+        "Use api-bridge-builder to integrate this webhook with idempotency and contract tests."
+      ],
+      "negative_prompt": "Reverse-engineer a private endpoint and hard-code my token in the repository.",
+      "negative_reason": "The skill requires documented interfaces and strict secret isolation.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 8,
+      "name": "data-pipeline-fabricator",
+      "display_name": "Data Pipeline Fabricator",
+      "layer": "engineering-execution",
+      "purpose": "Turn a source-to-target data contract into a repeatable, observable pipeline.",
+      "description": "Design and implement a repeatable data pipeline with schema contracts, idempotent stages, data-quality checks, lineage, and recovery points. Use when a task needs ingestion, transformation, reconciliation, or scheduled dataset production; do not use for a one-off calculation that does not justify pipeline overhead.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "local_read",
+        "local_write",
+        "network_read_optional",
+        "network_write_optional"
+      ],
+      "inputs": [
+        "source and target schemas",
+        "volume, cadence, and latency expectations",
+        "data-quality rules",
+        "retention, recovery, and ownership requirements"
+      ],
+      "outputs": [
+        "pipeline stage graph",
+        "schema and checkpoint contracts",
+        "quality and reconciliation tests",
+        "runbook and lineage manifest"
+      ],
+      "use_when": [
+        "Data must be refreshed repeatedly.",
+        "The workflow has multiple transformations or recovery points.",
+        "Quality and lineage are part of the acceptance criteria."
+      ],
+      "avoid_when": [
+        "A spreadsheet formula or short script is enough.",
+        "The source license does not allow storage or redistribution.",
+        "The target schema is undefined."
+      ],
+      "workflow": [
+        "Define source ownership, target contract, cadence, and legal retention boundary.",
+        "Separate extract, normalize, validate, transform, publish, and reconcile stages.",
+        "Make stages idempotent and persist explicit checkpoints and watermarks.",
+        "Add schema, completeness, uniqueness, freshness, and reconciliation tests.",
+        "Return the runnable pipeline, lineage, runbook, and known scaling limits."
+      ],
+      "failure_modes": [
+        "Using arrival time as business event time.",
+        "Silently coercing schema changes.",
+        "Publishing partial data without a completeness state."
+      ],
+      "keywords": [
+        "data pipeline",
+        "ETL workflow",
+        "ingestion pipeline",
+        "data quality",
+        "data lineage",
+        "scheduled dataset"
+      ],
+      "phrases": [
+        "build a repeatable data pipeline",
+        "create an etl pipeline",
+        "ingest transform and validate",
+        "create an etl workflow"
+      ],
+      "anti_keywords": [
+        "one-off calculation",
+        "single formula"
+      ],
+      "positive_prompts": [
+        "Build a repeatable data pipeline with schema checks and recovery checkpoints.",
+        "Create an ETL workflow that reconciles every published batch to the source."
+      ],
+      "negative_prompt": "Calculate the average of these ten values once.",
+      "negative_reason": "A one-off calculation does not justify pipeline architecture.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 9,
+      "name": "fileops-guardian",
+      "display_name": "FileOps Guardian",
+      "layer": "engineering-execution",
+      "purpose": "Make consequential file operations inventory-first, previewable, verifiable, and reversible.",
+      "description": "Plan or execute scoped file copy, move, rename, archive, deduplication, or deletion with inventory, dry-run, checksums, collision policy, and rollback records. Invoke only when the user explicitly requests file operations or names this skill; never scan unrelated directories or delete the only verified copy.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "local_read",
+        "local_write",
+        "destructive_write_optional"
+      ],
+      "inputs": [
+        "exact source scope",
+        "target layout",
+        "collision and duplicate policy",
+        "retention and rollback requirements"
+      ],
+      "outputs": [
+        "inventory and proposed operation manifest",
+        "dry-run diff",
+        "checksum and collision report",
+        "applied result and rollback manifest"
+      ],
+      "use_when": [
+        "The user explicitly asks to reorganize or clean files.",
+        "A migration needs proof that no file was lost.",
+        "Deduplication or deletion requires an audit trail."
+      ],
+      "avoid_when": [
+        "The source scope is ambiguous.",
+        "No backup or rollback path exists for destructive work.",
+        "The request would traverse unrelated personal directories."
+      ],
+      "workflow": [
+        "Freeze exact roots, exclusions, link handling, and destructive-action policy.",
+        "Inventory metadata and checksums without changing files.",
+        "Generate a collision-safe dry-run manifest and review ambiguous duplicates.",
+        "Apply approved operations atomically where possible and never overwrite silently.",
+        "Verify counts and hashes, then emit a rollback and exception manifest."
+      ],
+      "failure_modes": [
+        "Deduplicating by filename alone.",
+        "Following symlinks outside the approved root.",
+        "Deleting before verifying the destination copy."
+      ],
+      "keywords": [
+        "organize files",
+        "move folders",
+        "rename files",
+        "deduplicate files",
+        "archive directory",
+        "delete files safely"
+      ],
+      "phrases": [
+        "use fileops guardian",
+        "safely reorganize these files",
+        "build a file migration manifest"
+      ],
+      "anti_keywords": [
+        "wipe everything",
+        "ignore backups"
+      ],
+      "positive_prompts": [
+        "$fileops-guardian inventory this folder and preview a collision-safe migration.",
+        "Use fileops-guardian to deduplicate these approved files without deleting the only copy."
+      ],
+      "negative_prompt": "Delete anything that looks old across my whole computer without showing me.",
+      "negative_reason": "Destructive file operations require exact scope, preview, and verification.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 10,
+      "name": "workflow-compiler",
+      "display_name": "Workflow Compiler",
+      "layer": "engineering-execution",
+      "purpose": "Compile a human process into an executable, testable workflow contract.",
+      "description": "Translate a defined process or SOP into a workflow graph with inputs, state, retries, idempotency, approvals, observability, and acceptance tests. Invoke only when the user explicitly requests automation or names this skill; do not deploy or schedule the workflow without a separate approval.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "local_write",
+        "execute_local_optional",
+        "external_write_optional"
+      ],
+      "inputs": [
+        "current process and desired outcome",
+        "triggers, actors, and systems",
+        "failure and retry policy",
+        "approval, schedule, and audit requirements"
+      ],
+      "outputs": [
+        "workflow DAG and state model",
+        "executable specification or scaffold",
+        "test matrix and failure injections",
+        "deployment and rollback checklist"
+      ],
+      "use_when": [
+        "The user explicitly asks to automate a repeatable process.",
+        "An SOP needs machine-verifiable states and recovery.",
+        "Multiple systems or approval gates must be coordinated."
+      ],
+      "avoid_when": [
+        "The process is still undefined or unstable.",
+        "The user wants only a written checklist.",
+        "The automation would remove mandatory human approval."
+      ],
+      "workflow": [
+        "Model the trigger, inputs, states, side effects, owners, and terminal outcomes.",
+        "Separate pure transformations from external writes and approval checkpoints.",
+        "Specify idempotency keys, retries, timeouts, compensation, and observability.",
+        "Produce the smallest executable scaffold and deterministic fixtures.",
+        "Run failure-path tests and return deployment plus rollback requirements."
+      ],
+      "failure_modes": [
+        "Automating an ambiguous process.",
+        "Retrying side effects without idempotency.",
+        "Treating a scheduled trigger as proof of completed delivery."
+      ],
+      "keywords": [
+        "workflow automation",
+        "SOP to automation",
+        "workflow DAG",
+        "compile process",
+        "scheduled workflow"
+      ],
+      "phrases": [
+        "use workflow compiler",
+        "turn this sop into an executable workflow",
+        "compile this process into automation"
+      ],
+      "anti_keywords": [
+        "just write a checklist"
+      ],
+      "positive_prompts": [
+        "$workflow-compiler turn this approved SOP into a testable workflow with retries and approvals.",
+        "Use workflow-compiler to model this scheduled process and its rollback path."
+      ],
+      "negative_prompt": "Give me a simple human checklist for tomorrow morning.",
+      "negative_reason": "A checklist does not require executable workflow architecture.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 11,
+      "name": "mission-control",
+      "display_name": "Mission Control",
+      "layer": "orchestration-operations",
+      "purpose": "Coordinate a complex, explicitly authorized mission using the minimum useful skill set.",
+      "description": "Coordinate a genuinely multi-stage mission across the smallest necessary set of skills, with owners, gates, dependencies, and a final synthesis. Invoke only when the user explicitly names this skill or asks for multi-skill orchestration; do not expand scope, create a ceremonial skill chain, or hide unresolved failures behind aggregation.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "orchestration",
+        "inherits_child_permissions"
+      ],
+      "inputs": [
+        "mission objective and decision owner",
+        "scope, constraints, and deadline",
+        "available evidence and tools",
+        "approval boundaries and success criteria"
+      ],
+      "outputs": [
+        "mission graph and minimal skill selection",
+        "stage owners and acceptance gates",
+        "dependency and risk register",
+        "evidence-backed final synthesis"
+      ],
+      "use_when": [
+        "The user explicitly requests coordination across multiple capabilities.",
+        "The work has independent stages with real dependencies.",
+        "A single specialist skill would not be sufficient."
+      ],
+      "avoid_when": [
+        "One specialist can complete the task directly.",
+        "The goal is vague or unbounded.",
+        "The user has not approved child skills with consequential permissions."
+      ],
+      "workflow": [
+        "Clarify one mission objective, non-goals, deadline, and final decision owner.",
+        "Select the minimum specialist set and explain why each is necessary.",
+        "Define stage inputs, outputs, gates, and permission inheritance.",
+        "Run or coordinate stages without masking conflicts, failures, or missing evidence.",
+        "Return one synthesis with completed evidence, unresolved risks, and next action."
+      ],
+      "failure_modes": [
+        "Using orchestration for a simple task.",
+        "Letting child skills silently broaden permissions.",
+        "Reporting partial stage completion as mission success."
+      ],
+      "keywords": [
+        "multi-skill orchestration",
+        "coordinate agents",
+        "mission plan",
+        "orchestrate workflow",
+        "complex mission"
+      ],
+      "phrases": [
+        "use mission control",
+        "coordinate these skills",
+        "orchestrate this multi-stage mission"
+      ],
+      "anti_keywords": [
+        "simple one-step task"
+      ],
+      "positive_prompts": [
+        "$mission-control coordinate research, decision, and implementation with explicit stage gates.",
+        "Use mission-control to orchestrate this multi-stage project using the minimum skill set."
+      ],
+      "negative_prompt": "Summarize this short paragraph.",
+      "negative_reason": "A single direct response is sufficient; orchestration would add needless complexity.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 12,
+      "name": "automation-self-healer",
+      "display_name": "Automation Self-Healer",
+      "layer": "orchestration-operations",
+      "purpose": "Diagnose and repair an automation through bounded patches, evidence, and rollback.",
+      "description": "Diagnose a failed automation, isolate root cause, propose the smallest patch, test it in a safe context, and preserve rollback evidence. Invoke only when the user explicitly requests repair or names this skill; never let the automation silently rewrite production, weaken controls, or declare recovery without an end-to-end check.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "local_read",
+        "local_write",
+        "execute_local",
+        "external_write_optional"
+      ],
+      "inputs": [
+        "failure evidence and last known good state",
+        "runtime and dependency context",
+        "allowed change surface",
+        "recovery objective and rollback policy"
+      ],
+      "outputs": [
+        "root-cause tree",
+        "minimal patch and rationale",
+        "before/after test evidence",
+        "rollback and residual-risk record"
+      ],
+      "use_when": [
+        "The user explicitly asks to fix a broken automation.",
+        "Logs and a reproducible failure are available.",
+        "The allowed repair boundary is defined."
+      ],
+      "avoid_when": [
+        "There is no evidence of the failure.",
+        "Repair would require disabling security controls.",
+        "A production write has not been authorized."
+      ],
+      "workflow": [
+        "Freeze the incident window, symptoms, last known good state, and allowed files or systems.",
+        "Reproduce the failure or state why reproduction is not possible.",
+        "Build a root-cause tree and choose the smallest reversible patch.",
+        "Test unit, integration, and end-to-end behavior including the original failure path.",
+        "Return patch evidence, rollback instructions, and any condition still unverified."
+      ],
+      "failure_modes": [
+        "Patching symptoms while leaving the trigger intact.",
+        "Weakening tests so the build appears green.",
+        "Calling a unit test pass an end-to-end recovery."
+      ],
+      "keywords": [
+        "fix broken automation",
+        "repair workflow",
+        "self-heal pipeline",
+        "recover failed job",
+        "automation incident"
+      ],
+      "phrases": [
+        "use automation self healer",
+        "repair this failed automation",
+        "diagnose and patch this workflow"
+      ],
+      "anti_keywords": [
+        "disable the tests",
+        "ignore security"
+      ],
+      "positive_prompts": [
+        "$automation-self-healer diagnose this failed job and test the smallest reversible patch.",
+        "Use automation-self-healer to repair the workflow without weakening its gates."
+      ],
+      "negative_prompt": "Make the pipeline green by deleting the failing tests.",
+      "negative_reason": "Recovery cannot be achieved by weakening the evidence or control surface.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 13,
+      "name": "decision-memo-engine",
+      "display_name": "Decision Memo Engine",
+      "layer": "decision-learning",
+      "purpose": "Convert evidence and constraints into a concise, auditable decision memo.",
+      "description": "Produce an answer-first decision memo with options, criteria, evidence, uncertainty, scenarios, recommendation, reversibility, and next actions. Use when a user must choose, prioritize, approve, or reject among alternatives; do not use for neutral summaries that contain no decision.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "reasoning_only",
+        "local_write_optional"
+      ],
+      "inputs": [
+        "decision question and owner",
+        "options and constraints",
+        "criteria and evidence",
+        "time horizon, reversibility, and risk tolerance"
+      ],
+      "outputs": [
+        "recommended decision",
+        "option comparison",
+        "assumptions and scenarios",
+        "triggers, risks, and next actions"
+      ],
+      "use_when": [
+        "The user must choose among options.",
+        "Evidence and trade-offs need executive compression.",
+        "The recommendation should be auditable and reversible."
+      ],
+      "avoid_when": [
+        "The user asks only for descriptive background.",
+        "No alternatives or decision criteria exist.",
+        "The decision requires a licensed professional judgment not available here."
+      ],
+      "workflow": [
+        "State the decision, owner, deadline, and what is not being decided.",
+        "Normalize options and define decision criteria before scoring or recommending.",
+        "Separate evidence, inference, assumptions, and unknowns.",
+        "Test the recommendation under base, upside, and downside conditions.",
+        "Return the recommendation, why now, reversal triggers, and immediate actions."
+      ],
+      "failure_modes": [
+        "Starting with a recommendation and inventing criteria afterward.",
+        "Hiding a value judgment inside a numeric score.",
+        "Ignoring reversibility and decision timing."
+      ],
+      "keywords": [
+        "decision memo",
+        "choose between",
+        "recommend an option",
+        "trade-off analysis",
+        "prioritize alternatives",
+        "go no-go"
+      ],
+      "phrases": [
+        "write a decision memo",
+        "which option should we choose",
+        "make a recommendation with tradeoffs",
+        "compare these options for a decision"
+      ],
+      "anti_keywords": [
+        "neutral summary only"
+      ],
+      "positive_prompts": [
+        "Write a decision memo comparing these three options and recommend one.",
+        "Which option should we choose given these constraints and reversal triggers?"
+      ],
+      "negative_prompt": "Summarize the history of this topic without recommending anything.",
+      "negative_reason": "A neutral synthesis does not require a decision memo.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 14,
+      "name": "experiment-autopilot",
+      "display_name": "Experiment Autopilot",
+      "layer": "decision-learning",
+      "purpose": "Design a falsifiable experiment with preregistered metrics, stops, and analysis.",
+      "description": "Design a falsifiable pilot, A/B test, or operational experiment with hypothesis, metrics, assignment, sample logic, guardrails, stopping rules, and analysis plan. Use when evidence should be generated through a controlled test; never launch experiments on people or production systems without the required authorization and review.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "reasoning_only",
+        "local_write_optional",
+        "execute_local_optional"
+      ],
+      "inputs": [
+        "decision and falsifiable hypothesis",
+        "population or unit of analysis",
+        "primary metric and guardrails",
+        "constraints, duration, and ethical review needs"
+      ],
+      "outputs": [
+        "preregistered experiment plan",
+        "assignment and sample logic",
+        "stopping and failure rules",
+        "analysis template and decision rule"
+      ],
+      "use_when": [
+        "A disputed assumption can be tested.",
+        "The user needs an A/B test or pilot design.",
+        "A decision rule can be defined before observing results."
+      ],
+      "avoid_when": [
+        "The intervention cannot be ethically or operationally controlled.",
+        "The sample is too small for the claimed inference.",
+        "The user only needs retrospective analysis."
+      ],
+      "workflow": [
+        "Translate the decision into one falsifiable hypothesis and one primary metric.",
+        "Define unit, assignment, baseline, duration, sample logic, and contamination risks.",
+        "Preregister guardrails, stopping rules, exclusions, and the decision threshold.",
+        "Specify instrumentation, data-quality checks, and the analysis before launch.",
+        "Return the runbook, analysis template, and conditions that invalidate the test."
+      ],
+      "failure_modes": [
+        "Changing the primary metric after seeing results.",
+        "Running multiple uncorrected comparisons.",
+        "Confusing operational significance with statistical significance."
+      ],
+      "keywords": [
+        "experiment design",
+        "A/B test",
+        "pilot study",
+        "test hypothesis",
+        "preregistered experiment",
+        "controlled trial"
+      ],
+      "phrases": [
+        "design an experiment",
+        "build an ab test plan",
+        "test this hypothesis with a pilot",
+        "design an a/b test",
+        "build a pilot"
+      ],
+      "anti_keywords": [
+        "retrospective only"
+      ],
+      "positive_prompts": [
+        "Design an A/B test with a primary metric, guardrails, and stopping rules.",
+        "Build a pilot to test this hypothesis before we commit the full budget."
+      ],
+      "negative_prompt": "Explain last quarter’s results using existing data only.",
+      "negative_reason": "This is retrospective analysis, not prospective experiment design.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 15,
+      "name": "knowledge-graph-builder",
+      "display_name": "Knowledge Graph Builder",
+      "layer": "decision-learning",
+      "purpose": "Model validated claims as time-aware entities and relationships with provenance, confidence, and contradiction handling.",
+      "description": "Build a provenance-aware knowledge graph from an authorized evidence set. Use when entity identity, typed relationships, temporal validity, confidence, contradictions, and supersession must remain queryable; do not create hidden personal profiles or promote inference to fact.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "local_read",
+        "local_write",
+        "network_read_optional"
+      ],
+      "inputs": [
+        "authorized source set",
+        "ontology or seed entities",
+        "identity and temporal rules",
+        "provenance and confidence policy"
+      ],
+      "outputs": [
+        "graph schema and entity-resolution rules",
+        "provenance-linked entity and relationship records",
+        "conflict and supersession ledger",
+        "queries, update rules, and unresolved identity cases"
+      ],
+      "use_when": [
+        "Claims must be connected across sources and time.",
+        "Contradictory or superseded facts must remain visible.",
+        "A reusable graph is more useful than another narrative summary."
+      ],
+      "avoid_when": [
+        "A simple table or note is sufficient.",
+        "The source set is unauthorized or contains unnecessary personal data.",
+        "The user asks for speculative relationships to be asserted as fact."
+      ],
+      "workflow": [
+        "Define the decision questions, authorized corpus, ontology boundary, and data-minimization rules.",
+        "Resolve entities conservatively and preserve aliases without forcing uncertain merges.",
+        "Create typed claims with source, observation date, valid time, confidence, and fact/inference labels.",
+        "Record contradictions and supersession as first-class relationships instead of deleting history.",
+        "Validate graph invariants, publish example queries, and list unresolved identity or evidence gaps."
+      ],
+      "failure_modes": [
+        "Merging similarly named entities without sufficient evidence.",
+        "Losing valid-time and observation-time distinctions.",
+        "Building a hidden dossier rather than a bounded research graph."
+      ],
+      "keywords": [
+        "knowledge graph",
+        "entity relationship",
+        "provenance graph",
+        "temporal claims",
+        "contradiction ledger",
+        "entity resolution"
+      ],
+      "phrases": [
+        "build a knowledge graph",
+        "model these entities and relationships",
+        "create a provenance-aware graph",
+        "track superseded claims",
+        "provenance-aware knowledge graph",
+        "model entities, relationships"
+      ],
+      "anti_keywords": [
+        "simple summary",
+        "private dossier",
+        "profile everyone"
+      ],
+      "positive_prompts": [
+        "Build a provenance-aware knowledge graph from these validated research notes.",
+        "Model entities, relationships, contradictions, and superseded claims over time."
+      ],
+      "negative_prompt": "Create a hidden profile of every person mentioned in my private messages.",
+      "negative_reason": "That request exceeds the authorized scope and violates data-minimization and privacy boundaries.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 16,
+      "name": "skillsmith",
+      "display_name": "Skillsmith",
+      "layer": "decision-learning",
+      "purpose": "Turn a repeated workflow into a narrow, testable, distributable Agent Skill.",
+      "description": "Design or refine a bounded Agent Skill with precise triggers, exclusions, workflow, permissions, examples, metadata, and evaluations. Use only when a workflow is repeated and stable enough to justify packaging; reject vague preferences, one-off tasks, and untested broad autonomy.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "local_read",
+        "local_write"
+      ],
+      "inputs": [
+        "repeated workflow and user outcome",
+        "successful and failed examples",
+        "tool and permission boundary",
+        "installation target and compatibility constraints"
+      ],
+      "outputs": [
+        "SKILL.md with scoped instructions",
+        "agents/openai.yaml metadata",
+        "positive, negative, and boundary examples",
+        "routing and policy evaluation cases"
+      ],
+      "use_when": [
+        "The same workflow recurs with stable inputs and outputs.",
+        "A capability needs explicit routing and permission boundaries.",
+        "Existing instructions are too broad or not testable."
+      ],
+      "avoid_when": [
+        "The task is a one-off request.",
+        "The workflow is still changing materially.",
+        "The proposed skill would become a vague do-everything assistant."
+      ],
+      "workflow": [
+        "Collect representative successful, failed, and non-trigger examples.",
+        "Define the narrow outcome, activation boundary, exclusions, permissions, and stopping conditions.",
+        "Write concise instructions that prefer existing tools and expose consequential actions.",
+        "Add metadata, examples, routing cases, and policy tests.",
+        "Run structural and behavioral evaluations; label untested host integrations honestly."
+      ],
+      "failure_modes": [
+        "Encoding personal preferences that belong in user or project instructions.",
+        "Using marketing language instead of executable workflow constraints.",
+        "Publishing a broad skill without negative routing cases."
+      ],
+      "keywords": [
+        "create a skill",
+        "agent skill",
+        "SKILL.md",
+        "openai.yaml",
+        "skill evaluation",
+        "workflow packaging"
+      ],
+      "phrases": [
+        "turn this workflow into a skill",
+        "design a reusable Agent Skill",
+        "write SKILL.md",
+        "add routing evals",
+        "turn this repeated workflow into",
+        "design a reusable skill"
+      ],
+      "anti_keywords": [
+        "one-off task",
+        "mega skill",
+        "handles everything"
+      ],
+      "positive_prompts": [
+        "Turn this repeated workflow into a narrow Agent Skill with routing evals.",
+        "Design a reusable SKILL.md and openai.yaml with positive and negative triggers."
+      ],
+      "negative_prompt": "Create one mega-skill that handles every research, coding, and personal task automatically.",
+      "negative_reason": "The scope is not bounded or testable and would create unsafe, ambiguous routing.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 17,
+      "name": "experience-replay",
+      "display_name": "Experience Replay",
+      "layer": "decision-learning",
+      "purpose": "Reconstruct an incident or project from authorized artifacts and turn verified lessons into prevention tests.",
+      "description": "Replay an incident, project, or decision from authorized logs, commits, records, and contemporaneous notes. Separate evidence from inference and hindsight, reconstruct the timeline and decision context, then convert lessons into tests or controls; do not assign blame without evidence.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "local_read",
+        "local_write_optional"
+      ],
+      "inputs": [
+        "authorized artifacts and time window",
+        "expected behavior or decision objective",
+        "known outcomes and uncertainties",
+        "review audience and desired prevention artifacts"
+      ],
+      "outputs": [
+        "evidence-linked timeline",
+        "decision and assumption reconstruction",
+        "causal hypotheses with confidence labels",
+        "prevention tests, controls, and open questions"
+      ],
+      "use_when": [
+        "A failure or success should be understood from contemporaneous evidence.",
+        "Lessons need to become reusable tests rather than anecdotes.",
+        "Hindsight bias must be explicitly controlled."
+      ],
+      "avoid_when": [
+        "The user only needs a simple chronological summary.",
+        "Relevant records are unavailable or unauthorized.",
+        "The request is to blame an individual without evidence."
+      ],
+      "workflow": [
+        "Freeze the evidence window and inventory authorized artifacts.",
+        "Build an observation-time timeline without using later knowledge to fill earlier gaps.",
+        "Map decisions to information available at the time, assumptions, constraints, and alternatives.",
+        "Separate verified causes, plausible contributors, and unknowns.",
+        "Translate lessons into concrete regression tests, monitoring signals, or decision checks."
+      ],
+      "failure_modes": [
+        "Treating later explanations as contemporaneous evidence.",
+        "Confusing correlation with causation.",
+        "Producing a narrative postmortem without prevention artifacts."
+      ],
+      "keywords": [
+        "incident replay",
+        "postmortem",
+        "project retrospective",
+        "hindsight bias",
+        "timeline reconstruction",
+        "lessons learned"
+      ],
+      "phrases": [
+        "replay this incident",
+        "reconstruct what happened",
+        "turn lessons into tests",
+        "analyze the project retrospectively"
+      ],
+      "anti_keywords": [
+        "blame this person",
+        "invent missing logs",
+        "simple chronology only"
+      ],
+      "positive_prompts": [
+        "Replay this incident from logs and commits, separating evidence from hindsight.",
+        "Reconstruct what happened and turn the lessons into prevention tests."
+      ],
+      "negative_prompt": "Blame one person for the failure even though the records do not establish responsibility.",
+      "negative_reason": "The skill requires evidence-linked causal analysis and does not support unsupported blame.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 18,
+      "name": "meeting-to-execution",
+      "display_name": "Meeting to Execution",
+      "layer": "orchestration-operations",
+      "purpose": "Convert authorized meeting material into a decision log and an execution-ready action register.",
+      "description": "Convert authorized notes or a transcript into decisions, actions, owners, dependencies, deadlines, ambiguities, and draft follow-up. Use for execution extraction, not as proof that ambiguous statements were commitments; sending messages or changing external systems requires separate approval.",
+      "explicit_only": false,
+      "risk": "medium",
+      "permissions": [
+        "local_read",
+        "local_write_optional",
+        "external_write_requires_approval"
+      ],
+      "inputs": [
+        "authorized notes or transcript",
+        "meeting date and participant labels",
+        "project context and vocabulary",
+        "output format and follow-up audience"
+      ],
+      "outputs": [
+        "decision and rationale log",
+        "action register with owner, due date, dependency, and evidence",
+        "ambiguity and unresolved-question list",
+        "draft follow-up message"
+      ],
+      "use_when": [
+        "A meeting must become an accountable execution record.",
+        "Owners, deadlines, and dependencies are scattered through notes.",
+        "Ambiguous commitments need to be surfaced before follow-up."
+      ],
+      "avoid_when": [
+        "No meeting material was provided or authorized.",
+        "The user asks to silently infer owners or deadlines.",
+        "The requested outcome is automatic sending without review."
+      ],
+      "workflow": [
+        "Confirm the authorized source, meeting date, participant labels, and project vocabulary.",
+        "Extract explicit decisions, proposed decisions, actions, owners, dates, and dependencies with source references.",
+        "Mark implied or ambiguous commitments instead of converting them into facts.",
+        "Produce an execution register and concise draft follow-up.",
+        "Request or rely on separate approval before any external write or invitation."
+      ],
+      "failure_modes": [
+        "Inventing an owner because a task lacks one.",
+        "Treating discussion as a final decision.",
+        "Sending a summary before the user reviews ambiguous commitments."
+      ],
+      "keywords": [
+        "meeting notes",
+        "meeting transcript",
+        "action items",
+        "decision log",
+        "owners and deadlines",
+        "follow-up draft"
+      ],
+      "phrases": [
+        "turn these meeting notes into actions",
+        "extract decisions and owners",
+        "create an execution register",
+        "draft the meeting follow-up",
+        "turn these meeting notes into",
+        "extract an execution register"
+      ],
+      "anti_keywords": [
+        "send immediately",
+        "invent owners",
+        "no transcript"
+      ],
+      "positive_prompts": [
+        "Turn these meeting notes into decisions, owners, dependencies, and a draft follow-up.",
+        "Extract an execution register from this transcript and flag ambiguous commitments."
+      ],
+      "negative_prompt": "Send every attendee a definitive action list immediately, even where the transcript is ambiguous.",
+      "negative_reason": "External sending requires separate approval and ambiguous commitments must remain flagged.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 19,
+      "name": "inbox-negotiator",
+      "display_name": "Inbox Negotiator",
+      "layer": "orchestration-operations",
+      "purpose": "Analyze an authorized message thread and draft a calibrated negotiation response without sending it.",
+      "description": "Analyze an explicitly authorized email or message thread to map interests, leverage, constraints, concessions, risks, and unanswered questions, then draft response options. Do not access unrelated messages, fabricate leverage, disclose confidential facts, or send without explicit approval.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "account_read_explicit",
+        "local_write_optional",
+        "external_write_requires_approval"
+      ],
+      "inputs": [
+        "explicitly authorized message thread",
+        "negotiation objective and non-negotiables",
+        "known facts and confidentiality constraints",
+        "desired tone, channel, and approval boundary"
+      ],
+      "outputs": [
+        "interest and leverage map",
+        "claim and unanswered-question ledger",
+        "concession ladder and risk analysis",
+        "two or more draft response options"
+      ],
+      "use_when": [
+        "The user explicitly invokes the skill for an authorized thread.",
+        "A negotiation requires structured interests and concession analysis.",
+        "The output should remain a draft until approval."
+      ],
+      "avoid_when": [
+        "The user did not explicitly invoke the skill.",
+        "The thread or account is not authorized.",
+        "The strategy depends on fabricated facts or deceptive claims."
+      ],
+      "workflow": [
+        "Confirm the exact authorized thread, objective, confidentiality boundary, and no-send default.",
+        "Separate verified facts, counterpart claims, assumptions, interests, leverage, constraints, and open questions.",
+        "Design a concession ladder and identify walk-away conditions and reputational risks.",
+        "Draft calibrated response options with different firmness levels.",
+        "Do not send or alter account state without a separate explicit instruction and approval."
+      ],
+      "failure_modes": [
+        "Reading unrelated inbox content.",
+        "Fabricating a competing offer or deadline.",
+        "Sending a draft without explicit approval."
+      ],
+      "keywords": [
+        "inbox negotiation",
+        "email negotiation",
+        "counteroffer",
+        "concession strategy",
+        "reply options",
+        "authorized thread"
+      ],
+      "phrases": [
+        "use inbox-negotiator",
+        "$inbox-negotiator",
+        "analyze this thread and draft",
+        "map interests and concessions"
+      ],
+      "anti_keywords": [
+        "send now",
+        "fabricate leverage",
+        "search my whole inbox"
+      ],
+      "positive_prompts": [
+        "$inbox-negotiator analyze this authorized thread and draft a counteroffer without sending it.",
+        "Use inbox-negotiator to map interests and write two calibrated reply options."
+      ],
+      "negative_prompt": "Fabricate a competing offer and send the bluff from my account.",
+      "negative_reason": "The skill forbids fabricated claims and requires separate approval for external sending.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    },
+    {
+      "id": 20,
+      "name": "personal-coo",
+      "display_name": "Personal COO",
+      "layer": "orchestration-operations",
+      "purpose": "Coordinate explicitly selected commitments into a bounded operating brief without building a hidden personal profile.",
+      "description": "Coordinate explicitly selected work, study, and life commitments into a bounded operating brief with priorities, dependencies, capacity constraints, reviews, and draft actions. Use only after explicit invocation; do not sweep all accounts, create a hidden persistent profile, or make consequential decisions without the user.",
+      "explicit_only": true,
+      "risk": "high",
+      "permissions": [
+        "local_read_explicit",
+        "account_read_explicit_optional",
+        "external_write_requires_approval"
+      ],
+      "inputs": [
+        "explicitly selected commitments and planning horizon",
+        "capacity, deadlines, constraints, and non-goals",
+        "authorized data sources",
+        "approval and persistence boundaries"
+      ],
+      "outputs": [
+        "bounded operating brief",
+        "priority and dependency map",
+        "capacity conflicts and escalation points",
+        "review cadence and draft next actions"
+      ],
+      "use_when": [
+        "The user explicitly invokes the skill for cross-domain coordination.",
+        "Multiple authorized commitments compete for limited capacity.",
+        "A bounded planning and review system is needed."
+      ],
+      "avoid_when": [
+        "The user did not explicitly invoke the skill.",
+        "The request implies scanning every connected account.",
+        "The desired output is an autonomous hidden personal profile."
+      ],
+      "workflow": [
+        "Confirm invocation, planning horizon, selected domains, authorized inputs, and persistence boundary.",
+        "Normalize commitments, deadlines, capacity needs, dependencies, and consequences of delay.",
+        "Prioritize using explicit criteria and surface conflicts rather than silently resolving them.",
+        "Produce a bounded operating brief, review cadence, and draft actions.",
+        "Require separate approval for external writes, schedule changes, messaging, or persistent profile updates."
+      ],
+      "failure_modes": [
+        "Expanding scope from selected commitments to the user's entire life.",
+        "Storing a hidden personal dossier.",
+        "Making cross-domain trade-offs without showing criteria and user control."
+      ],
+      "keywords": [
+        "personal COO",
+        "operating brief",
+        "cross-domain planning",
+        "commitment coordination",
+        "capacity planning",
+        "weekly operating review"
+      ],
+      "phrases": [
+        "use personal-coo",
+        "$personal-coo",
+        "coordinate these commitments",
+        "create a bounded operating brief"
+      ],
+      "anti_keywords": [
+        "scan all accounts",
+        "decide everything",
+        "hidden profile"
+      ],
+      "positive_prompts": [
+        "$personal-coo coordinate these selected work and study commitments into a weekly operating brief.",
+        "Use personal-coo for a bounded cross-domain review without storing a personal profile."
+      ],
+      "negative_prompt": "Build a permanent hidden profile from all my accounts and decide every priority for me.",
+      "negative_reason": "The skill requires explicit scope, data minimization, visible criteria, and user approval.",
+      "maturity": "instruction-audited",
+      "runtime_status": "host-dependent",
+      "version": "0.1.0"
+    }
+  ]
+}

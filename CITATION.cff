@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If this skill pack or its evaluation design supports your work, cite the repository."
+title: "Codex Executive Skill Pack"
+type: software
+authors:
+  - family-names: "Huang"
+    given-names: "Jingjie"
+repository-code: "https://github.com/JINGJAYHUANG/codex-executive-skill-pack"
+url: "https://github.com/JINGJAYHUANG/codex-executive-skill-pack"
+version: "0.1.0"
+date-released: "2026-08-30"
+license: MIT
