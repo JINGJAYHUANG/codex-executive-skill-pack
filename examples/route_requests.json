@@ -1,0 +1,27 @@
+[
+  {
+    "request": "Collect public web evidence and build a source table from official pages.",
+    "expected": "web-intel-harvester",
+    "disposition": "route"
+  },
+  {
+    "request": "Reorganize these files safely with a preview and rollback plan.",
+    "expected": "fileops-guardian",
+    "disposition": "suggest_explicit"
+  },
+  {
+    "request": "$fileops-guardian: preview a safe rename plan; do not apply.",
+    "expected": "fileops-guardian",
+    "disposition": "route"
+  },
+  {
+    "request": "Write a decision memo comparing build, buy, and partner options.",
+    "expected": "decision-memo-engine",
+    "disposition": "route"
+  },
+  {
+    "request": "Rewrite this sentence for clarity.",
+    "expected": null,
+    "disposition": "no_route"
+  }
+]
