@@ -17,6 +17,8 @@ jobs:
   bootstrap:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      PYTHONPATH: src
 
     steps:
       - name: Check out feature branch
@@ -76,19 +78,14 @@ jobs:
             --exclude='.github/workflows/' \
             "$RUNNER_TEMP/source-tree/" ./
 
-      - name: Run release gate
+      - name: Run zero-install release gate
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install \
-            --disable-pip-version-check \
-            --no-deps \
-            --no-build-isolation \
-            -e .
           python -m compileall -q src scripts tests
           python -m unittest discover -s tests -v
-          cesp validate --root . --strict
-          cesp eval --root .
+          python -m executive_skill_pack validate --root . --strict
+          python -m executive_skill_pack eval --root .
           python scripts/generate_reference.py --root . --check
           python scripts/check_docs.py --root .
           python scripts/public_audit.py .
