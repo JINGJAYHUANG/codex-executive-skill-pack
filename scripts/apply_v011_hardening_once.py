@@ -1,0 +1,659 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def replace_once(path: str, old: str, new: str) -> None:
+    target = ROOT / path
+    text = target.read_text(encoding="utf-8")
+    count = text.count(old)
+    if count != 1:
+        raise SystemExit(f"{path}: expected one replacement, found {count}")
+    target.write_text(text.replace(old, new), encoding="utf-8", newline="\n")
+
+
+# Router: honor the catalog threshold and keep explicit invocation independent.
+replace_once(
+    "src/executive_skill_pack/router.py",
+    '''    threshold = (
+        int(minimum_score)
+        if minimum_score is not None
+        else int(data.get("pack", {}).get("routing_minimum_score", 6))
+    )
+    if minimum_score is None:
+        threshold = 6
+''',
+    '''    raw_threshold = (
+        minimum_score
+        if minimum_score is not None
+        else data.get("pack", {}).get("routing_minimum_score", 6)
+    )
+    if isinstance(raw_threshold, bool) or not isinstance(raw_threshold, int):
+        raise ValueError("minimum score must be an integer")
+    if raw_threshold < 0:
+        raise ValueError("minimum score must be non-negative")
+    threshold = raw_threshold
+''',
+)
+replace_once(
+    "src/executive_skill_pack/router.py",
+    '''    if not ranked or ranked[0].score < threshold:
+        return RouteResult(prompt, None, "direct", threshold, ranked)
+
+    # Explicit invocation always wins. Otherwise avoid pretending a close tie is
+    # certain: a margin below two points is reported as ambiguous.
+    top = ranked[0]
+    if not top.explicit and len(ranked) > 1 and top.score - ranked[1].score < 2:
+        return RouteResult(prompt, None, "ambiguous", threshold, ranked)
+
+    return RouteResult(prompt, top.name, "skill", threshold, ranked)
+''',
+    '''    if not ranked:
+        return RouteResult(prompt, None, "direct", threshold, ranked)
+
+    # Explicit activation is a user decision, not an implicit relevance score.
+    top = ranked[0]
+    if top.explicit:
+        return RouteResult(prompt, top.name, "skill", threshold, ranked)
+    if top.score < threshold:
+        return RouteResult(prompt, None, "direct", threshold, ranked)
+
+    # Avoid pretending a close implicit tie is certain.
+    if len(ranked) > 1 and top.score - ranked[1].score < 2:
+        return RouteResult(prompt, None, "ambiguous", threshold, ranked)
+
+    return RouteResult(prompt, top.name, "skill", threshold, ranked)
+''',
+)
+
+# Installer: reject symlinks anywhere below the approved installation target.
+replace_once(
+    "src/executive_skill_pack/installer.py",
+    '''def _safe_target(target: Path) -> Path:
+    resolved = target.expanduser().resolve()
+    anchor = Path(resolved.anchor)
+    if resolved == anchor:
+        raise InstallError("refusing to install into a filesystem root")
+    if any(part in {".git", "__pycache__"} for part in resolved.parts):
+        raise InstallError("refusing to install inside a control or cache directory")
+    return resolved
+
+
+def _select_skills''',
+    '''def _safe_target(target: Path) -> Path:
+    resolved = target.expanduser().resolve()
+    anchor = Path(resolved.anchor)
+    if resolved == anchor:
+        raise InstallError("refusing to install into a filesystem root")
+    if any(part in {".git", "__pycache__"} for part in resolved.parts):
+        raise InstallError("refusing to install inside a control or cache directory")
+    return resolved
+
+
+def _assert_no_symlink_components(path: Path, target: Path) -> None:
+    try:
+        path.relative_to(target)
+    except ValueError as exc:
+        raise InstallError("planned path escaped the installation target") from exc
+
+    current = path
+    while True:
+        if current.is_symlink():
+            relative = current.relative_to(target)
+            label = relative.as_posix() if relative.parts else "."
+            raise InstallError(
+                f"refusing to traverse symbolic link inside target: {label}"
+            )
+        if current == target:
+            return
+        current = current.parent
+
+
+def _select_skills''',
+)
+replace_once(
+    "src/executive_skill_pack/installer.py",
+    '''    for path in sorted(payloads, key=lambda item: item.as_posix()):
+        content = payloads[path]
+''',
+    '''    for path in sorted(payloads, key=lambda item: item.as_posix()):
+        _assert_no_symlink_components(path, resolved)
+        content = payloads[path]
+''',
+)
+replace_once(
+    "src/executive_skill_pack/installer.py",
+    '''        for path, content in sorted(payloads.items(), key=lambda item: item[0].as_posix()):
+            if path.exists() and path.read_text(encoding="utf-8") == content:
+''',
+    '''        for path, content in sorted(payloads.items(), key=lambda item: item[0].as_posix()):
+            _assert_no_symlink_components(path, resolved)
+            if path.exists() and path.read_text(encoding="utf-8") == content:
+''',
+)
+
+# Validator: validate versions and thresholds; skill versions are independent.
+replace_once(
+    "src/executive_skill_pack/validator.py",
+    "REQUIRED_SKILL_KEYS = {",
+    '''SEMVER = re.compile(
+    r"^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)"
+    r"(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+)
+
+
+REQUIRED_SKILL_KEYS = {''',
+)
+replace_once(
+    "src/executive_skill_pack/validator.py",
+    '''    pack = catalog.get("pack", {})
+    listed = catalog.get("skills", [])
+''',
+    '''    pack = catalog.get("pack", {})
+    if not isinstance(pack, dict):
+        issues.append(Issue("error", "pack_type", "catalog/skills.json", "pack must be an object"))
+        pack = {}
+    pack_version = pack.get("version")
+    if not isinstance(pack_version, str) or not SEMVER.fullmatch(pack_version):
+        issues.append(Issue("error", "pack_version", "catalog/skills.json", "pack version must be semantic version text"))
+    routing_minimum_score = pack.get("routing_minimum_score")
+    if (
+        isinstance(routing_minimum_score, bool)
+        or not isinstance(routing_minimum_score, int)
+        or routing_minimum_score < 0
+    ):
+        issues.append(Issue("error", "routing_threshold", "catalog/skills.json", "routing_minimum_score must be a non-negative integer"))
+
+    listed = catalog.get("skills", [])
+''',
+)
+replace_once(
+    "src/executive_skill_pack/validator.py",
+    '''        if skill.get("id") != position:
+            issues.append(Issue("error", "skill_id", f"catalog:{name}", "id must match canonical order"))
+        if skill.get("maturity") != "instruction-audited" or skill.get("runtime_status") != "host-dependent":
+''',
+    '''        if skill.get("id") != position:
+            issues.append(Issue("error", "skill_id", f"catalog:{name}", "id must match canonical order"))
+        skill_version = skill.get("version")
+        if not isinstance(skill_version, str) or not SEMVER.fullmatch(skill_version):
+            issues.append(Issue("error", "skill_version", f"catalog:{name}", "skill version must be semantic version text"))
+        if skill.get("maturity") != "instruction-audited" or skill.get("runtime_status") != "host-dependent":
+''',
+)
+replace_once(
+    "src/executive_skill_pack/validator.py",
+    '                "version": "0.1.0",',
+    '                "version": skill.get("version"),',
+)
+validator = ROOT / "src/executive_skill_pack/validator.py"
+validator_text = validator.read_text(encoding="utf-8")
+validator_text = validator_text.replace(
+    "explicit-only set differs from the public v0.1.0 policy",
+    "explicit-only set differs from the public policy",
+).replace(
+    "public v0.1.0 is skill-only and must not bind apps, MCP servers, or hooks",
+    "the public pack is skill-only and must not bind apps, MCP servers, or hooks",
+)
+validator.write_text(validator_text, encoding="utf-8", newline="\n")
+
+# Router tests.
+replace_once(
+    "tests/test_router_and_evals.py",
+    "import json\nimport unittest\n",
+    "import copy\nimport json\nimport unittest\n",
+)
+replace_once(
+    "tests/test_router_and_evals.py",
+    '''    def test_minimum_score_can_be_raised(self):
+        result = route_prompt(
+            "Build a competitor radar for these vendors using public evidence.",
+            minimum_score=1000,
+        )
+        self.assertIsNone(result.selected)
+
+
+class EvaluationTests''',
+    '''    def test_minimum_score_can_be_raised(self):
+        result = route_prompt(
+            "Build a competitor radar for these vendors using public evidence.",
+            minimum_score=1000,
+        )
+        self.assertIsNone(result.selected)
+
+    def test_catalog_default_threshold_is_respected(self):
+        catalog = copy.deepcopy(load_catalog())
+        catalog["pack"]["routing_minimum_score"] = 1000
+        result = route_prompt(
+            "Build a competitor radar for these vendors using public evidence.",
+            catalog=catalog,
+        )
+        self.assertIsNone(result.selected)
+        self.assertEqual(result.status, "direct")
+        self.assertEqual(result.minimum_score, 1000)
+
+    def test_explicit_invocation_bypasses_implicit_threshold(self):
+        result = route_prompt(
+            "$mission-control coordinate research and implementation with gates.",
+            minimum_score=1000,
+        )
+        self.assertEqual(result.selected, "mission-control")
+        self.assertEqual(result.status, "skill")
+        self.assertTrue(result.candidates[0].explicit)
+
+    def test_invalid_thresholds_are_rejected(self):
+        for value in (-1, True, "6"):
+            catalog = copy.deepcopy(load_catalog())
+            catalog["pack"]["routing_minimum_score"] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                route_prompt("Build a competitor radar.", catalog=catalog)
+
+
+class EvaluationTests''',
+)
+
+# Installer tests.
+replace_once(
+    "tests/test_installer.py",
+    "    def test_plugin_layout_contains_manifest_and_all_skills(self):\n",
+    '''    def test_symlinked_parent_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            outside = Path(tmp) / "outside"
+            (root / ".agents").mkdir(parents=True)
+            outside.mkdir()
+            link = root / ".agents" / "skills"
+            try:
+                link.symlink_to(outside, target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symbolic links are unavailable: {exc}")
+            with self.assertRaises(InstallError):
+                plan_install(
+                    root,
+                    layout="repo-skills",
+                    names=["web-intel-harvester"],
+                    apply=True,
+                )
+
+    def test_symlinked_destination_is_rejected_even_with_replace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            outside = Path(tmp) / "outside.txt"
+            outside.write_text("outside\n")
+            target = root / ".agents/skills/web-intel-harvester/SKILL.md"
+            target.parent.mkdir(parents=True)
+            try:
+                target.symlink_to(outside)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symbolic links are unavailable: {exc}")
+            with self.assertRaises(InstallError):
+                plan_install(
+                    root,
+                    layout="repo-skills",
+                    names=["web-intel-harvester"],
+                    apply=True,
+                    replace=True,
+                )
+            self.assertEqual(outside.read_text(), "outside\n")
+
+    def test_plugin_layout_contains_manifest_and_all_skills(self):
+''',
+)
+
+# Catalog and publication tests.
+replace_once(
+    "tests/test_catalog_and_validator.py",
+    "    def test_descriptions_are_unique(self):\n",
+    '''    def test_versions_and_default_threshold_are_well_formed(self):
+        catalog = load_catalog()
+        self.assertRegex(catalog["pack"]["version"], r"^\\d+\\.\\d+\\.\\d+")
+        self.assertIsInstance(catalog["pack"]["routing_minimum_score"], int)
+        self.assertGreaterEqual(catalog["pack"]["routing_minimum_score"], 0)
+        for item in catalog["skills"]:
+            with self.subTest(name=item["name"]):
+                self.assertRegex(item["version"], r"^\\d+\\.\\d+\\.\\d+")
+
+    def test_descriptions_are_unique(self):
+''',
+)
+replace_once(
+    "tests/test_catalog_and_validator.py",
+    '''                self.assertEqual(metadata["description"], mapping[name]["description"])
+                self.assertIn("## Stop conditions", body)
+''',
+    '''                self.assertEqual(metadata["description"], mapping[name]["description"])
+                self.assertEqual(metadata["metadata"]["version"], mapping[name]["version"])
+                self.assertIn("## Stop conditions", body)
+''',
+)
+replace_once(
+    "tests/test_publication.py",
+    "    def test_skill_reference_contains_all_names(self):\n",
+    '''    def test_release_workflow_is_dynamic_and_main_bound(self):
+        text = (ROOT / ".github/workflows/release.yml").read_text()
+        self.assertIn("release/v*", text)
+        self.assertIn("git rev-parse origin/main", text)
+        self.assertIn("sha256sum -c SHA256SUMS.txt", text)
+        self.assertIn("gh release upload", text)
+        self.assertIn("--clobber", text)
+        self.assertIn('len(catalog["skills"])', text)
+        self.assertIn("routing_cases = sum(", text)
+        self.assertNotIn("Codex Executive Skill Pack v0.1.0", text)
+
+    def test_skill_reference_contains_all_names(self):
+''',
+)
+
+# Pack version. Skill contract versions remain 0.1.0 because their instructions
+# did not change; validator now checks them independently.
+replace_once("pyproject.toml", 'version = "0.1.0"', 'version = "0.1.1"')
+replace_once(
+    "src/executive_skill_pack/__init__.py",
+    '__version__ = "0.1.0"',
+    '__version__ = "0.1.1"',
+)
+replace_once("CITATION.cff", 'version: "0.1.0"', 'version: "0.1.1"')
+replace_once(
+    "README.md",
+    "**Release status:** `v0.1.0` · `instruction-audited` · `host-dependent`",
+    "**Release status:** `v0.1.1` · `instruction-audited` · `host-dependent`",
+)
+
+catalog_path = ROOT / "catalog/skills.json"
+catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+if catalog["pack"]["version"] != "0.1.0":
+    raise SystemExit(f"unexpected catalog version: {catalog['pack']['version']}")
+catalog["pack"]["version"] = "0.1.1"
+catalog_text = json.dumps(catalog, ensure_ascii=False, indent=2) + "\n"
+catalog_path.write_text(catalog_text, encoding="utf-8", newline="\n")
+(ROOT / "src/executive_skill_pack/data/skills.json").write_text(
+    catalog_text, encoding="utf-8", newline="\n"
+)
+
+plugin_path = ROOT / ".codex-plugin/plugin.json"
+plugin = json.loads(plugin_path.read_text(encoding="utf-8"))
+if plugin["version"] != "0.1.0":
+    raise SystemExit(f"unexpected plugin version: {plugin['version']}")
+plugin["version"] = "0.1.1"
+plugin_text = json.dumps(plugin, ensure_ascii=False, indent=2) + "\n"
+plugin_path.write_text(plugin_text, encoding="utf-8", newline="\n")
+(ROOT / "src/executive_skill_pack/data/plugin.json").write_text(
+    plugin_text, encoding="utf-8", newline="\n"
+)
+
+changelog = ROOT / "CHANGELOG.md"
+old_changelog = changelog.read_text(encoding="utf-8")
+marker = "## [0.1.0] — 2026-08-30\n"
+if old_changelog.count(marker) != 1:
+    raise SystemExit("CHANGELOG insertion marker changed")
+section = '''## [0.1.1] — 2026-08-30
+
+### Fixed
+
+- Honor the catalog-defined implicit-routing threshold instead of silently resetting it to `6`.
+- Keep explicit skill invocation independent of the implicit-routing relevance threshold.
+- Reject invalid negative, Boolean, or non-integer routing thresholds.
+- Reject symbolic-link traversal inside installer targets, including replacement mode.
+- Validate pack and skill semantic versions without coupling unchanged skill contracts to the pack release number.
+- Bind releases to the current `main` commit and derive provenance counts from repository data.
+
+### Release engineering
+
+- Generate version-specific notes, verify checksums in their own directory, and make release asset repair idempotent.
+- Preserve the `instruction-audited` and `host-dependent` maturity boundary.
+
+'''
+changelog.write_text(
+    old_changelog.replace(marker, section + marker),
+    encoding="utf-8",
+    newline="\n",
+)
+
+notes = ROOT / "docs/release-notes/v0.1.1.md"
+notes.parent.mkdir(parents=True, exist_ok=True)
+notes.write_text(
+    '''## Codex Executive Skill Pack v0.1.1
+
+This audit-hardening release fixes routing configuration semantics, protects the preview-first installer from in-target symbolic-link traversal, and makes release provenance dynamic and main-bound.
+
+### Verified
+
+- Exact 20 canonical skills and nine explicit-only skills remain unchanged.
+- Unchanged skill contracts remain at contract version `0.1.0`; pack tooling is `0.1.1`.
+- Catalog routing thresholds are honored and validated.
+- Explicit invocation is never blocked by an implicit-routing threshold.
+- Installer writes reject symbolic-link path components.
+- Python 3.11–3.13 CI, routing evaluations, public audit, installer tests, documentation checks, and reproducible-wheel gate pass.
+
+### Boundary
+
+The pack remains instruction-audited and host-dependent. It does not bundle credentials, private memory, account connectors, desktop drivers, inbox access, or autonomous external actions.
+''',
+    encoding="utf-8",
+    newline="\n",
+)
+
+release_workflow = '''name: Release
+
+on:
+  create:
+  push:
+    branches:
+      - "release/v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codex-executive-skill-pack-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Verify and publish
+    if: >-
+      (github.event_name == 'create' &&
+       github.event.ref_type == 'branch' &&
+       startsWith(github.event.ref, 'release/v')) ||
+      (github.event_name == 'push' &&
+       startsWith(github.ref_name, 'release/v'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: src
+
+    steps:
+      - name: Check out immutable release candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+          cache: ""
+
+      - name: Confirm release candidate equals current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --no-tags
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+
+      - name: Resolve and validate version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "create" ]]; then
+            release_ref="${{ github.event.ref }}"
+          else
+            release_ref="$GITHUB_REF_NAME"
+          fi
+          version="${release_ref#release/}"
+          [[ "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          expected="v$(python - <<'PY_VERSION'
+          import json
+          import tomllib
+          from pathlib import Path
+
+          project = tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version']
+          plugin = json.loads(Path('.codex-plugin/plugin.json').read_text(encoding='utf-8'))['version']
+          catalog = json.loads(Path('catalog/skills.json').read_text(encoding='utf-8'))['pack']['version']
+          package_line = next(
+              line for line in Path('src/executive_skill_pack/__init__.py').read_text(encoding='utf-8').splitlines()
+              if line.startswith('__version__ = ')
+          )
+          package = package_line.split('"')[1]
+          versions = {'project': project, 'plugin': plugin, 'catalog': catalog, 'package': package}
+          if len(set(versions.values())) != 1:
+              raise SystemExit(f'version mismatch: {versions}')
+          print(project)
+          PY_VERSION
+          )"
+          test "$version" = "$expected"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Re-run release gates
+        run: |
+          python -m compileall -q src scripts tests
+          python scripts/run_release_gate.py
+          python -m executive_skill_pack validate --root . --strict
+          python -m executive_skill_pack eval --root .
+
+      - name: Install pinned build tooling
+        run: python -m pip install --disable-pip-version-check setuptools==80.9.0 wheel==0.45.1
+
+      - name: Configure annotated tag identity
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]"@"users.noreply.github.com"
+
+      - name: Create, verify, or repair pre-release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.value }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          head_sha="$(git rev-parse HEAD)"
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
+            git fetch origin "refs/tags/$VERSION:refs/tags/$VERSION" --force
+            tag_sha="$(git rev-list -n 1 "$VERSION")"
+            if [[ "$tag_sha" != "$head_sha" ]]; then
+              if gh release view "$VERSION" >/dev/null 2>&1; then
+                echo "refusing to move a tag that already has a GitHub Release" >&2
+                exit 1
+              fi
+              git tag -fa "$VERSION" -m "Codex Executive Skill Pack $VERSION" HEAD
+              git push --force origin "refs/tags/$VERSION"
+            fi
+          else
+            git tag -a "$VERSION" -m "Codex Executive Skill Pack $VERSION" HEAD
+            git push origin "refs/tags/$VERSION"
+          fi
+
+      - name: Build and verify release assets
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${VERSION#v}"
+          rm -rf dist
+          mkdir -p dist
+          prefix="codex-executive-skill-pack-${version}/"
+          git archive --format=tar --prefix="$prefix" HEAD \
+            | gzip -n > "dist/codex-executive-skill-pack-${version}.tar.gz"
+          git archive --format=zip --prefix="$prefix" HEAD \
+            > "dist/codex-executive-skill-pack-${version}.zip"
+          SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)" \
+            python -m pip wheel \
+              --disable-pip-version-check \
+              --no-deps \
+              --no-build-isolation \
+              --wheel-dir dist .
+          python - <<'PY_PROVENANCE'
+          import json
+          import os
+          from pathlib import Path
+
+          catalog = json.loads(Path('catalog/skills.json').read_text(encoding='utf-8'))
+          skills = catalog['skills']
+          routing_cases = sum(
+              1 for line in Path('evals/routing_cases.jsonl').read_text(encoding='utf-8').splitlines()
+              if line.strip()
+          )
+          payload = {
+              'schema_version': 1,
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'tag': os.environ['VERSION'],
+              'commit': os.environ['GITHUB_SHA'],
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'workflow_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'skill_count': len(catalog["skills"]),
+              'explicit_only_count': sum(item['explicit_only'] for item in skills),
+              'routing_cases': routing_cases,
+              'python_matrix': ['3.11', '3.12', '3.13'],
+              'maturity': catalog['pack']['maturity'],
+              'runtime_status': catalog['pack']['runtime_status'],
+              'public_boundary_audit': 'passed',
+          }
+          Path('dist/RELEASE_PROVENANCE.json').write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY_PROVENANCE
+          (
+            cd dist
+            sha256sum \
+              "codex-executive-skill-pack-${version}.tar.gz" \
+              "codex-executive-skill-pack-${version}.zip" \
+              "codex_executive_skill_pack-${version}-py3-none-any.whl" \
+              RELEASE_PROVENANCE.json \
+              > SHA256SUMS.txt
+            sha256sum -c SHA256SUMS.txt
+          )
+
+      - name: Create or repair GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.value }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${VERSION#v}"
+          notes="docs/release-notes/${VERSION}.md"
+          test -f "$notes"
+          assets=(
+            "dist/codex-executive-skill-pack-${version}.tar.gz"
+            "dist/codex-executive-skill-pack-${version}.zip"
+            "dist/codex_executive_skill_pack-${version}-py3-none-any.whl"
+            "dist/SHA256SUMS.txt"
+            "dist/RELEASE_PROVENANCE.json"
+          )
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            gh release edit "$VERSION" \
+              --title "Codex Executive Skill Pack $VERSION" \
+              --notes-file "$notes"
+            gh release upload "$VERSION" "${assets[@]}" --clobber
+          else
+            gh release create "$VERSION" "${assets[@]}" \
+              --title "Codex Executive Skill Pack $VERSION" \
+              --notes-file "$notes" \
+              --verify-tag
+          fi
+'''
+(ROOT / ".github/workflows/release.yml").write_text(
+    release_workflow, encoding="utf-8", newline="\n"
+)
+
+print("v0.1.1 hardening patch applied")
