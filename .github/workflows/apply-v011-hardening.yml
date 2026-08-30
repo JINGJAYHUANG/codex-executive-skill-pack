@@ -63,11 +63,11 @@ jobs:
           python -m compileall -q src scripts tests
           python scripts/run_release_gate.py
 
-      - name: Commit audited source changes
+      - name: Commit non-workflow source changes
         shell: bash
         run: |
           set -euo pipefail
-          rm -f .github/workflows/apply-v011-hardening.yml
+          git checkout origin/main -- .github/workflows/release.yml
           rm -f scripts/apply_v011_hardening_once.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]"@"users.noreply.github.com"
