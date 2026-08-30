@@ -1,0 +1,46 @@
+name: Skill contract proposal
+description: Propose a new or changed skill using evidence and boundary cases
+title: "skill: "
+labels: ["skill-contract"]
+body:
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Repeated workflow
+      description: What repeated workflow or failure mode requires this change?
+    validations:
+      required: true
+  - type: textarea
+    id: distinction
+    attributes:
+      label: Distinction from existing skills
+      description: Why can an existing specialist not cover it?
+    validations:
+      required: true
+  - type: textarea
+    id: positive
+    attributes:
+      label: Positive trigger example
+    validations:
+      required: true
+  - type: textarea
+    id: negative
+    attributes:
+      label: Negative boundary example
+    validations:
+      required: true
+  - type: dropdown
+    id: invocation
+    attributes:
+      label: Proposed invocation policy
+      options:
+        - auto
+        - explicit_first
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Test and evidence plan
+    validations:
+      required: true
