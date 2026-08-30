@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+recursive-include src/codex_executive_skill_pack/data *.json
+recursive-include .codex-plugin *.json
+recursive-include skills SKILL.md *.yaml
+recursive-include catalog *.json
+recursive-include evals *.jsonl
+recursive-include docs *.md
